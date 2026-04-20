@@ -13,11 +13,10 @@
 
 </head>
 <body>
-    <%@include file="WEB-INF/components/Navbar.jsp"%>
-
+    <%@ include file="WEB-INF/components/Navbar.jsp"%>
     <section class="hero">
         <div class="hero-inner">
-            <h1>Find Your Dream Job in <span style="color: var(--primary);">Koshi Province</span></h1>
+            <h1>Find Your Dream Job in <span>Koshi Province</span></h1>
             <p>Connecting local talent with the best employers across Nepal. Simple, professional, and effective.</p>
 
             <div class="search-bar">
