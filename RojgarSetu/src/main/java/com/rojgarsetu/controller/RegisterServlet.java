@@ -19,6 +19,6 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Handle registration logic here
         // For now, redirect to login
-        response.sendRedirect("register");
+        response.sendRedirect("login");
     }
 }

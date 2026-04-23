@@ -1,10 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Navbar</title>
-    <link rel="stylesheet" href="static/Navbar.css">
-</head>
-<body>
 <nav class="navbar">
     <div class="navbar-brand">RojgarSetu</div>
     <ul class="nav-links">
@@ -19,5 +12,4 @@
         <a href="register" class="btn-nav btn-register">Register</a>
     </div>
 </nav>
-</body>
-</html>
+
