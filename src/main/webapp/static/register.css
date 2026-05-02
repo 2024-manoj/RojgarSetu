@@ -1,0 +1,388 @@
+/* ===== AUTH SECTION (Login & Register) ===== */
+.auth-section {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--main-bg);
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background-color: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: 40px;
+    width: 100%;
+    max-width: 440px;
+}
+
+/* Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-logo-icon {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(26, 60, 110, 0.1);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.auth-logo-icon i {
+    font-size: 1.4rem;
+    color: var(--primary-blue);
+}
+
+.auth-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+}
+
+.auth-subtitle {
+    font-size: 0.88rem;
+    color: var(--neutral-grey);
+}
+
+/* Tabs */
+.auth-tabs {
+    display: flex;
+    gap: 8px;
+    background-color: var(--soft-bg);
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    background: transparent;
+    color: var(--neutral-grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: all 0.2s ease;
+}
+
+.auth-tab.active {
+    background-color: var(--white);
+    color: var(--primary-blue);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert Messages */
+.auth-alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-alert.error {
+    background-color: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.auth-alert.success {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+/* Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.form-label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-label i {
+    color: var(--primary-blue);
+    font-size: 0.8rem;
+}
+
+.form-input {
+    padding: 11px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #333;
+    background-color: var(--white);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(26, 60, 110, 0.08);
+}
+
+.form-input::placeholder {
+    color: #bbb;
+}
+
+/* Label Row (label + forgot link) */
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.forgot-link {
+    font-size: 0.82rem;
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.forgot-link:hover {
+    opacity: 0.75;
+}
+
+/* Password Toggle */
+.input-password-wrapper {
+    position: relative;
+}
+
+.input-password-wrapper .form-input {
+    width: 100%;
+    padding-right: 44px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--neutral-grey);
+    font-size: 0.9rem;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: var(--primary-blue);
+}
+
+/* Remember Me & Terms Checkbox */
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.check-input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-blue);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.check-label {
+    font-size: 0.85rem;
+    color: var(--neutral-grey);
+    cursor: pointer;
+}
+
+.terms-link {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms-link:hover {
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 4px;
+}
+
+.btn-submit:hover {
+    background-color: #152f58;
+    transform: translateY(-1px);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: #ccc;
+    font-size: 0.82rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #e8e8e8;
+}
+
+/* Switch Link */
+.auth-switch {
+    text-align: center;
+    font-size: 0.86rem;
+    color: var(--neutral-grey);
+}
+
+.auth-switch a {
+    color: var(--primary-blue);
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 4px;
+    transition: opacity 0.2s;
+}
+
+.auth-switch a:hover {
+    opacity: 0.75;
+}
+
+/* Employer-only field */
+.employer-only-field {
+    transition: all 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 20px;
+    }
+
+    .auth-title {
+        font-size: 1.3rem;
+    }
+
+    .auth-tab {
+        font-size: 0.8rem;
+        padding: 7px;
+    }
+
+    .form-check {
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== ROLE RADIO BUTTONS ===== */
+.role-radios {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    background-color: var(--soft-bg);
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.role-radio {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--neutral-grey);
+    background-color: transparent;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.role-radio input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.role-radio:has(input:checked) {
+    background-color: var(--white);
+    color: var(--primary-blue);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.role-radio i {
+    font-size: 1rem;
+}
+
+/* Field hint text */
+.field-hint {
+    font-size: 0.7rem;
+    color: var(--neutral-grey);
+    margin-top: 4px;
+    display: block;
+}
+
+/* Select dropdown styling */
+select.form-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2376777B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
