@@ -1,4 +1,4 @@
-<%--
+<%@ page import="java.sql.SQLException" %><%--
   Created by IntelliJ IDEA.
   User: katwa
   Date: 5/1/2026
@@ -20,6 +20,8 @@
 <body >
 <%@ include file="/WEB-INF/components/Navbar.jsp"%>
 <!-- Hero Section -->
+
+
 <section class="hero">
     <div class="hero-content">
         <h1 class="hero-title">

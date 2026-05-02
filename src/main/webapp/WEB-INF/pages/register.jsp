@@ -55,7 +55,7 @@
         <% } %>
 
         <!-- Register Form -->
-        <form action="${pageContext.request.contextPath}/RegisterServlet" method="post" class="auth-form">
+        <form action="${pageContext.request.contextPath}/register" method="post" class="auth-form">
 
             <!-- Hidden role field for servlet -->
             <input type="hidden" name="role" id="roleField" value="seeker">
@@ -161,6 +161,50 @@
 <%@ include file="/WEB-INF/components/Footer.jsp"%>
 
 <script>
+    function toggleRoleFields() {
+        const roleRadios = document.querySelectorAll('input[name="role"]');
+        let selectedRole = "seeker";
+
+        for (let radio of roleRadios) {
+            if (radio.checked) {
+                selectedRole = radio.value;
+                break;
+            }
+        }
+
+        const seekerFields = document.getElementById('seekerFields');
+        const employerFields = document.getElementById('employerFields');
+        const registerBtn = document.getElementById('registerBtn');
+        const roleField = document.getElementById('roleField');
+
+        roleField.value = selectedRole;
+
+        if (selectedRole === 'seeker') {
+            seekerFields.style.display = 'block';
+            employerFields.style.display = 'none';
+            registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register as Seeker';
+
+            // Make seeker fields required
+            document.querySelectorAll('#seekerFields select, #seekerFields input').forEach(field => {
+                field.required = true;
+            });
+            document.querySelectorAll('#employerFields select, #employerFields input').forEach(field => {
+                field.required = false;
+            });
+        } else {
+            seekerFields.style.display = 'none';
+            employerFields.style.display = 'block';
+            registerBtn.innerHTML = '<i class="fas fa-building"></i> Register as Employer';
+
+            // Make employer fields required
+            document.querySelectorAll('#employerFields select, #employerFields input').forEach(field => {
+                field.required = true;
+            });
+            document.querySelectorAll('#seekerFields select, #seekerFields input').forEach(field => {
+                field.required = false;
+            });
+        }
+    }
 
 
 
