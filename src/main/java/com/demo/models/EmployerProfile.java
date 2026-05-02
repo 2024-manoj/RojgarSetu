@@ -12,11 +12,12 @@ public class EmployerProfile {
     private String contactPerson;
     private Integer verifiedBy;   // admin user id
     private Date verifiedAt;      // timestamp
+    private String companyCity;
 
 
     public EmployerProfile(int id, int userId, String companyName, String companyAddress,
                            String companyCategory, String companyDescription, String contactPerson,
-                           Integer verifiedBy, Date verifiedAt) {
+                           Integer verifiedBy, Date verifiedAt,String companyCity) {
         this.id = id;
         this.userId = userId;
         this.companyName = companyName;
@@ -26,6 +27,7 @@ public class EmployerProfile {
         this.contactPerson = contactPerson;
         this.verifiedBy = verifiedBy;
         this.verifiedAt = verifiedAt;
+        this.companyCity = companyCity;
     }
 
     public EmployerProfile() {
@@ -59,4 +61,12 @@ public class EmployerProfile {
 
     public Date getVerifiedAt() { return verifiedAt; }
     public void setVerifiedAt(Date verifiedAt) { this.verifiedAt = verifiedAt; }
+
+    public String getCompanyCity() {
+        return companyCity;
+    }
+
+    public void setCompanyCity(String companyCity) {
+        this.companyCity = companyCity;
+    }
 }
