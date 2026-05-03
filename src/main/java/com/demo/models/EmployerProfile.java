@@ -10,14 +10,13 @@ public class EmployerProfile {
     private String companyCategory;
     private String companyDescription;
     private String contactPerson;
-    private Integer verifiedBy;   // admin user id
-    private Date verifiedAt;      // timestamp
+    private Integer verifiedBy; // admin user id
+    private Date verifiedAt; // timestamp
     private String companyCity;
 
-
     public EmployerProfile(int id, int userId, String companyName, String companyAddress,
-                           String companyCategory, String companyDescription, String contactPerson,
-                           Integer verifiedBy, Date verifiedAt,String companyCity) {
+            String companyCategory, String companyDescription, String contactPerson,
+            Integer verifiedBy, Date verifiedAt, String companyCity) {
         this.id = id;
         this.userId = userId;
         this.companyName = companyName;
@@ -35,32 +34,77 @@ public class EmployerProfile {
     }
 
     // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getCompanyName() { return companyName; }
-    public void setCompanyName(String companyName) { this.companyName = companyName; }
+    public int getUserId() {
+        return userId;
+    }
 
-    public String getCompanyAddress() { return companyAddress; }
-    public void setCompanyAddress(String companyAddress) { this.companyAddress = companyAddress; }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
-    public String getCompanyCategory() { return companyCategory; }
-    public void setCompanyCategory(String companyCity) { this.companyCategory = companyCity; }
+    public String getCompanyName() {
+        return companyName;
+    }
 
-    public String getCompanyDescription() { return companyDescription; }
-    public void setCompanyDescription(String companyDescription) { this.companyDescription = companyDescription; }
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 
-    public String getContactPerson() { return contactPerson; }
-    public void setContactPerson(String contactPerson) { this.contactPerson = contactPerson; }
+    public String getCompanyAddress() {
+        return companyAddress;
+    }
 
-    public Integer getVerifiedBy() { return verifiedBy; }
-    public void setVerifiedBy(Integer verifiedBy) { this.verifiedBy = verifiedBy; }
+    public void setCompanyAddress(String companyAddress) {
+        this.companyAddress = companyAddress;
+    }
 
-    public Date getVerifiedAt() { return verifiedAt; }
-    public void setVerifiedAt(Date verifiedAt) { this.verifiedAt = verifiedAt; }
+    public String getCompanyCategory() {
+        return companyCategory;
+    }
+
+    public void setCompanyCategory(String companyCity) {
+        this.companyCategory = companyCity;
+    }
+
+    public String getCompanyDescription() {
+        return companyDescription;
+    }
+
+    public void setCompanyDescription(String companyDescription) {
+        this.companyDescription = companyDescription;
+    }
+
+    public String getContactPerson() {
+        return contactPerson;
+    }
+
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+
+    public Integer getVerifiedBy() {
+        return verifiedBy;
+    }
+
+    public void setVerifiedBy(Integer verifiedBy) {
+        this.verifiedBy = verifiedBy;
+    }
+
+    public Date getVerifiedAt() {
+        return verifiedAt;
+    }
+
+    public void setVerifiedAt(Date verifiedAt) {
+        this.verifiedAt = verifiedAt;
+    }
 
     public String getCompanyCity() {
         return companyCity;

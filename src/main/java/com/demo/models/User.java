@@ -15,9 +15,8 @@ public class User {
     private Date dob;
     private Timestamp createdAt;
 
-
-
-    public User(int id, String fullName, String email, String phone, String password, String role, String location, String status, Date dob, Timestamp createdAt, String education, String companyName, String industryType) {
+    public User(int id, String fullName, String email, String phone, String password, String role, String location,
+            String status, Date dob, Timestamp createdAt, String education, String companyName, String industryType) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -42,11 +41,6 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
-
-
-
-
-
 
     public Timestamp getCreatedAt() {
         return createdAt;

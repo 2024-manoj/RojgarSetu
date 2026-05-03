@@ -7,10 +7,7 @@ import com.demo.models.User;
 import com.demo.utils.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,16 +16,15 @@ import java.sql.Connection;
 public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req,resp);
+        req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req, resp);
     }
 
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // 🔹 Get role first
         String role = req.getParameter("role");
 
-        // 🔹 Create User object
         User user = new User();
         user.setFullName(req.getParameter("fullName"));
         user.setEmail(req.getParameter("email"));
@@ -36,40 +32,30 @@ public class RegisterServlet extends HttpServlet {
         user.setRole(role);
         user.setLocation(req.getParameter("city"));
 
-        // 🔹 DOB convert (safe)
         try {
             user.setDob(java.sql.Date.valueOf(req.getParameter("dob")));
         } catch (Exception e) {
             user.setDob(null);
         }
 
-        // 🔹 Profile objects
         SeekerProfile seeker = null;
         EmployerProfile employer = null;
 
-        // 🔥 ROLE BASED OBJECT CREATION
         if ("SEEKER".equalsIgnoreCase(role)) {
-
             seeker = new SeekerProfile();
             seeker.setEducation(req.getParameter("education"));
-            // Note: skills field not present in form, setting to empty for now
             seeker.setSkills("");
-
         } else if ("EMPLOYER".equalsIgnoreCase(role)) {
-
             employer = new EmployerProfile();
             employer.setCompanyName(req.getParameter("companyName"));
-            employer.setCompanyCategory(req.getParameter("industry")); // Fixed: was "companyCategory"
+            employer.setCompanyCategory(req.getParameter("industry"));
         }
 
-        try {
-            Connection conn = DBConnection.getConnection();
+        try (Connection conn = DBConnection.getConnection()) {
             UserDao dao = new UserDao(conn);
-
             boolean result = dao.registerUser(user, seeker, employer);
 
             HttpSession session = req.getSession();
-
             if (result) {
                 session.setAttribute("success", "Registration Successful! Please login.");
                 resp.sendRedirect(req.getContextPath() + "/login");
@@ -77,7 +63,6 @@ public class RegisterServlet extends HttpServlet {
                 session.setAttribute("error", "Registration Failed!");
                 resp.sendRedirect(req.getContextPath() + "/register");
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendRedirect(req.getContextPath() + "/register?error=2");
