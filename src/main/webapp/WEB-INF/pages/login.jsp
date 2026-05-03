@@ -41,15 +41,16 @@
         <% } %>
 
         <!-- Success Message -->
-        <% String success = (String) request.getAttribute("success"); %>
+        <% String success = (String) session.getAttribute("success"); %>
         <% if (success != null) { %>
         <div class="auth-alert success">
             <i class="fas fa-circle-check"></i> <%= success %>
         </div>
+        <% session.removeAttribute("success"); %>
         <% } %>
 
         <!-- Login Form -->
-        <form action="${pageContext.request.contextPath}/LoginServlet" method="post" class="auth-form">
+        <form action="${pageContext.request.contextPath}/login" method="post" class="auth-form">
 
             <!-- Email -->
             <div class="form-group">

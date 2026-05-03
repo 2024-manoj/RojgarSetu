@@ -45,7 +45,15 @@
         </div>
 
         <!-- Error/Success Messages -->
-        <% String error = (String) request.getAttribute("error"); %>
+        <%
+            String error = (String) request.getAttribute("error");
+            String errorParam = request.getParameter("error");
+            if (errorParam != null) {
+                if ("2".equals(errorParam)) {
+                    error = "An error occurred during registration. Please try again.";
+                }
+            }
+        %>
         <% if (error != null) { %>
         <div class="auth-alert error"><i class="fas fa-circle-exclamation"></i> <%= error %></div>
         <% } %>
@@ -226,4 +234,4 @@
 
 </script>
 </body>
-</html>`
+</html>

@@ -72,18 +72,20 @@
           </div>
 
           <!-- Success/Error Messages -->
-          <% String success = (String) request.getAttribute("success"); %>
+          <% String success = (String) session.getAttribute("success"); %>
           <% if (success != null) { %>
           <div class="alert-success">
             <i class="fas fa-circle-check"></i> <%= success %>
           </div>
+          <% session.removeAttribute("success"); %>
           <% } %>
 
-          <% String error = (String) request.getAttribute("error"); %>
+          <% String error = (String) session.getAttribute("error"); %>
           <% if (error != null) { %>
           <div class="alert-error">
             <i class="fas fa-circle-exclamation"></i> <%= error %>
           </div>
+          <% session.removeAttribute("error"); %>
           <% } %>
 
           <button type="submit" class="btn-submit">

@@ -1,16 +1,54 @@
 package com.demo.controller;
 
+import com.demo.dao.UserDao;
+import com.demo.models.User;
+import com.demo.utils.DBConnection;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.Connection;
+
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
+
+        try {
+            Connection conn = DBConnection.getConnection();
+            UserDao dao = new UserDao(conn);
+
+            User user = dao.getUserByEmailAndPassword(email, password);
+
+            if (user != null) {
+                HttpSession session = req.getSession();
+                session.setAttribute("user", user);
+                session.setAttribute("userId", user.getId());
+                session.setAttribute("userRole", user.getRole());
+                resp.sendRedirect(req.getContextPath() + "/home");
+            } else {
+                req.setAttribute("error", "Invalid email or password!");
+                req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, resp);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "An error occurred during login!");
+            try {
+                req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, resp);
+            } catch (Exception ex) {
+                resp.sendRedirect(req.getContextPath() + "/login?error=1");
+            }
+        }
     }
 }

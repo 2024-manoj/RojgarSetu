@@ -33,7 +33,11 @@ public class UserDao {
                 ps.setString(4, user.getRole());
                 ps.setString(5, "PENDING");
                 ps.setString(6, user.getLocation());
-                ps.setDate(7, new java.sql.Date(user.getDob().getTime()));
+                if (user.getDob() != null) {
+                    ps.setDate(7, new java.sql.Date(user.getDob().getTime()));
+                } else {
+                    ps.setDate(7, null);
+                }
 
                 int i = ps.executeUpdate();
 
@@ -83,5 +87,35 @@ public class UserDao {
         }
 
         return success;
+    }
+
+    public User getUserByEmailAndPassword(String email, String password) {
+        User user = null;
+        try {
+            String sql = "SELECT id, full_name, email, phone, password, role, status, location, dob, created_at FROM users WHERE email = ? AND password = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, email);
+                ps.setString(2, password);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        user = new User();
+                        user.setId(rs.getInt("id"));
+                        user.setFullName(rs.getString("full_name"));
+                        user.setEmail(rs.getString("email"));
+                        user.setPhone(rs.getString("phone"));
+                        user.setPassword(rs.getString("password"));
+                        user.setRole(rs.getString("role"));
+                        user.setStatus(rs.getString("status"));
+                        user.setLocation(rs.getString("location"));
+                        user.setDob(rs.getDate("dob"));
+                        user.setCreatedAt(rs.getTimestamp("created_at"));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
     }
 }
