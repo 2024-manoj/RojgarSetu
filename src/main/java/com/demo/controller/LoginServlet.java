@@ -33,7 +33,10 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("userRole", user.getRole());
 
                 if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    session.setAttribute("adminName",user.getFullName());
                     resp.sendRedirect(req.getContextPath() + "/admin");
+
+
                 } else if ("SEEKER".equalsIgnoreCase(user.getRole())) {
                     resp.sendRedirect(req.getContextPath() + "/seeker");
                 } else if ("EMPLOYER".equalsIgnoreCase(user.getRole())) {
