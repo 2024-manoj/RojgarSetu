@@ -91,19 +91,19 @@ pageEncoding="UTF-8"%>
           <div class="stats-grid">
             <div class="stat-card">
               <h3>Total Users</h3>
-              <p class="stat-number" id="totalUsers">1,234</p>
+              <p class="stat-number" id="totalUsers"><%= request.getAttribute("totalUsers") %></p>
             </div>
             <div class="stat-card">
               <h3>Total Employers</h3>
-              <p class="stat-number" id="totalEmployers">567</p>
+              <p class="stat-number" id="totalEmployers"><%= request.getAttribute("totalEmployers") %></p>
             </div>
             <div class="stat-card">
               <h3>Total Jobs</h3>
-              <p class="stat-number" id="totalJobs">890</p>
+              <p class="stat-number" id="totalJobs"><%= request.getAttribute("totalJobs") %></p>
             </div>
             <div class="stat-card">
               <h3>Pending Approvals</h3>
-              <p class="stat-number" id="pendingApprovals">12</p>
+              <p class="stat-number" id="pendingApprovals"><%= request.getAttribute("pendingApprovals") %></p>
             </div>
           </div>
 
@@ -197,60 +197,39 @@ pageEncoding="UTF-8"%>
                   </tr>
                 </thead>
                 <tbody id="seekersTable">
+                  <%
+                    java.util.List<com.demo.models.User> seekers = (java.util.List<com.demo.models.User>) request.getAttribute("seekers");
+                    if (seekers != null && !seekers.isEmpty()) {
+                      for (com.demo.models.User seeker : seekers) {
+                  %>
                   <tr>
-                    <td>1</td>
-                    <td>Rajesh Kumar</td>
-                    <td>rajesh@email.com</td>
-                    <td>Biratnagar</td>
+                    <td><%= seeker.getId() %></td>
+                    <td><%= seeker.getFullName() %></td>
+                    <td><%= seeker.getEmail() %></td>
+                    <td><%= seeker.getLocation() != null ? seeker.getLocation() : "N/A" %></td>
                     <td>
-                      <span class="status-badge status-active">Active</span>
+                      <span class="status-badge status-<%= seeker.getStatus().toLowerCase() %>"><%= seeker.getStatus() %></span>
                     </td>
                     <td>
-                      <button
-                        class="action-btn-sm action-view"
-                        onclick="viewItem('Seeker', 'Rajesh Kumar')"
-                      >
-                        <i class="fas fa-eye"></i></button
-                      ><button
-                        class="action-btn-sm action-edit"
-                        onclick="editItem('Seeker', 'Rajesh Kumar')"
-                      >
-                        <i class="fas fa-edit"></i></button
-                      ><button
-                        class="action-btn-sm action-delete"
-                        onclick="deleteItem('Seeker', 'Rajesh Kumar')"
-                      >
+                      <button class="action-btn-sm action-view" onclick="viewItem('Seeker', '<%= seeker.getFullName() %>')">
+                        <i class="fas fa-eye"></i></button>
+                      <button class="action-btn-sm action-edit" onclick="editItem('Seeker', '<%= seeker.getFullName() %>')">
+                        <i class="fas fa-edit"></i></button>
+                      <button class="action-btn-sm action-delete" onclick="deleteItem('Seeker', '<%= seeker.getFullName() %>')">
                         <i class="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
+                  <%
+                      }
+                    } else {
+                  %>
                   <tr>
-                    <td>2</td>
-                    <td>Sita Sharma</td>
-                    <td>sita@email.com</td>
-                    <td>Dharan</td>
-                    <td>
-                      <span class="status-badge status-active">Active</span>
-                    </td>
-                    <td>
-                      <button
-                        class="action-btn-sm action-view"
-                        onclick="viewItem('Seeker', 'Sita Sharma')"
-                      >
-                        <i class="fas fa-eye"></i></button
-                      ><button
-                        class="action-btn-sm action-edit"
-                        onclick="editItem('Seeker', 'Sita Sharma')"
-                      >
-                        <i class="fas fa-edit"></i></button
-                      ><button
-                        class="action-btn-sm action-delete"
-                        onclick="deleteItem('Seeker', 'Sita Sharma')"
-                      >
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </td>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No seekers found</td>
                   </tr>
+                  <%
+                    }
+                  %>
                 </tbody>
               </table>
             </div>
@@ -276,33 +255,39 @@ pageEncoding="UTF-8"%>
                   </tr>
                 </thead>
                 <tbody id="employersTable">
+                  <%
+                    java.util.List<com.demo.models.User> employers = (java.util.List<com.demo.models.User>) request.getAttribute("employers");
+                    if (employers != null && !employers.isEmpty()) {
+                      for (com.demo.models.User employer : employers) {
+                  %>
                   <tr>
-                    <td>1</td>
-                    <td>Tech Solutions Inc.</td>
-                    <td>contact@tech.com</td>
-                    <td>Kathmandu</td>
+                    <td><%= employer.getId() %></td>
+                    <td><%= employer.getFullName() %></td>
+                    <td><%= employer.getEmail() %></td>
+                    <td><%= employer.getLocation() != null ? employer.getLocation() : "N/A" %></td>
                     <td>
-                      <span class="status-badge status-approved">Approved</span>
+                      <span class="status-badge status-<%= employer.getStatus().toLowerCase() %>"><%= employer.getStatus() %></span>
                     </td>
                     <td>
-                      <button
-                        class="action-btn-sm action-view"
-                        onclick="viewItem('Employer', 'Tech Solutions')"
-                      >
-                        <i class="fas fa-eye"></i></button
-                      ><button
-                        class="action-btn-sm action-edit"
-                        onclick="editItem('Employer', 'Tech Solutions')"
-                      >
-                        <i class="fas fa-edit"></i></button
-                      ><button
-                        class="action-btn-sm action-delete"
-                        onclick="deleteItem('Employer', 'Tech Solutions')"
-                      >
+                      <button class="action-btn-sm action-view" onclick="viewItem('Employer', '<%= employer.getFullName() %>')">
+                        <i class="fas fa-eye"></i></button>
+                      <button class="action-btn-sm action-edit" onclick="editItem('Employer', '<%= employer.getFullName() %>')">
+                        <i class="fas fa-edit"></i></button>
+                      <button class="action-btn-sm action-delete" onclick="deleteItem('Employer', '<%= employer.getFullName() %>')">
                         <i class="fas fa-trash"></i>
                       </button>
                     </td>
                   </tr>
+                  <%
+                      }
+                    } else {
+                  %>
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No employers found</td>
+                  </tr>
+                  <%
+                    }
+                  %>
                 </tbody>
               </table>
             </div>
@@ -328,28 +313,41 @@ pageEncoding="UTF-8"%>
                   </tr>
                 </thead>
                 <tbody id="jobsTable">
+                  <%
+                    java.util.List<com.demo.models.Job> jobs = (java.util.List<com.demo.models.Job>) request.getAttribute("jobs");
+                    if (jobs != null && !jobs.isEmpty()) {
+                      for (com.demo.models.Job job : jobs) {
+                  %>
                   <tr>
-                    <td>1</td>
-                    <td>Software Engineer</td>
-                    <td>Tech Solutions</td>
-                    <td>Kathmandu</td>
+                    <td><%= job.getJobId() %></td>
+                    <td><%= job.getTitle() %></td>
+                    <td>Company ID: <%= job.getEmployerId() %></td>
+                    <td><%= job.getLocationCity() != null ? job.getLocationCity() : "N/A" %></td>
                     <td>
-                      <span class="status-badge status-pending">Pending</span>
+                      <span class="status-badge status-<%= job.getStatus() %>"><%= job.getStatus() %></span>
                     </td>
                     <td>
-                      <button
-                        class="action-btn-sm action-approve"
-                        onclick="approveJob(this)"
-                      >
-                        <i class="fas fa-check-circle"></i></button
-                      ><button
-                        class="action-btn-sm action-reject"
-                        onclick="rejectJob(this)"
-                      >
-                        <i class="fas fa-times-circle"></i>
-                      </button>
+                      <% if ("pending".equalsIgnoreCase(job.getStatus())) { %>
+                        <button class="action-btn-sm action-approve" onclick="approveJob(this, <%= job.getJobId() %>)">
+                          <i class="fas fa-check-circle"></i></button>
+                        <button class="action-btn-sm action-reject" onclick="rejectJob(this, <%= job.getJobId() %>)">
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+                      <% } else { %>
+                        <span style="font-size: 0.85rem; color: #888;">(<%= job.getStatus() %>)</span>
+                      <% } %>
                     </td>
                   </tr>
+                  <%
+                      }
+                    } else {
+                  %>
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No jobs found</td>
+                  </tr>
+                  <%
+                    }
+                  %>
                 </tbody>
               </table>
             </div>
@@ -547,23 +545,33 @@ pageEncoding="UTF-8"%>
         }
       }
 
-      function approveJob(button) {
+      function approveJob(button, jobId) {
         if (confirm("Approve this job posting?")) {
           const row = button.closest("tr");
           const statusCell = row.querySelector("td:nth-child(5)");
           statusCell.innerHTML =
             '<span class="status-badge status-approved">Approved</span>';
+          const actionsCell = row.querySelector("td:nth-child(6)");
+          actionsCell.innerHTML = '<span style="font-size: 0.85rem; color: #888;">(approved)</span>';
           showAlert("Job approved successfully!");
+
+          // Optional: Send approval to server
+          // fetch('/demo-1.0-SNAPSHOT/approveJob?jobId=' + jobId, {method: 'POST'});
         }
       }
 
-      function rejectJob(button) {
+      function rejectJob(button, jobId) {
         if (confirm("Reject this job posting?")) {
           const row = button.closest("tr");
           const statusCell = row.querySelector("td:nth-child(5)");
           statusCell.innerHTML =
             '<span class="status-badge status-rejected">Rejected</span>';
+          const actionsCell = row.querySelector("td:nth-child(6)");
+          actionsCell.innerHTML = '<span style="font-size: 0.85rem; color: #888;">(rejected)</span>';
           showAlert("Job rejected!");
+
+          // Optional: Send rejection to server
+          // fetch('/demo-1.0-SNAPSHOT/rejectJob?jobId=' + jobId, {method: 'POST'});
         }
       }
 
