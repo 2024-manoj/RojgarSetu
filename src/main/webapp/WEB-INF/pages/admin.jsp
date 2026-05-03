@@ -215,7 +215,7 @@ pageEncoding="UTF-8"%>
                         <i class="fas fa-eye"></i></button>
                       <button class="action-btn-sm action-edit" onclick="editItem('Seeker', '<%= seeker.getFullName() %>')">
                         <i class="fas fa-edit"></i></button>
-                      <button class="action-btn-sm action-delete" onclick="deleteItem('Seeker', '<%= seeker.getFullName() %>')">
+                      <button class="action-btn-sm action-delete" onclick="deleteItem('Seeker', <%= seeker.getId() %>)">
                         <i class="fas fa-trash"></i>
                       </button>
                     </td>
@@ -539,9 +539,32 @@ pageEncoding="UTF-8"%>
         showAlert("Edit " + type + ": " + name);
       }
 
-      function deleteItem(type, name) {
-        if (confirm("Are you sure you want to delete " + type + ": " + name + "?")) {
-          showAlert(type + " deleted successfully!");
+      function deleteItem(type, userId) {
+        if (confirm("Are you sure you want to delete this " + type + "?")) {
+          // Make AJAX call to delete user
+          fetch('<%= request.getContextPath() %>/deleteUser', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'userId=' + userId
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showAlert(type + " deleted successfully!");
+              // Reload the page to show updated list
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            } else {
+              showAlert("Error: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showAlert("Error deleting " + type);
+          });
         }
       }
 
