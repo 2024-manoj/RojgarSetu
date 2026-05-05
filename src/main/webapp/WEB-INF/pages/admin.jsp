@@ -269,11 +269,14 @@ pageEncoding="UTF-8"%>
                       <span class="status-badge status-<%= employer.getStatus().toLowerCase() %>"><%= employer.getStatus() %></span>
                     </td>
                     <td>
-                      <button class="action-btn-sm action-view" onclick="viewItem('Employer', '<%= employer.getFullName() %>')">
-                        <i class="fas fa-eye"></i></button>
-                      <button class="action-btn-sm action-edit" onclick="editItem('Employer', '<%= employer.getFullName() %>')">
-                        <i class="fas fa-edit"></i></button>
-                      <button class="action-btn-sm action-delete" onclick="deleteItem('Employer', '<%= employer.getFullName() %>')">
+                      <% if ("PENDING".equalsIgnoreCase(employer.getStatus())) { %>
+                        <button class="action-btn-sm action-approve" onclick="approveUser(this, <%= employer.getId() %>, 'APPROVED')">
+                          <i class="fas fa-check-circle"></i></button>
+                        <button class="action-btn-sm action-reject" onclick="approveUser(this, <%= employer.getId() %>, 'REJECTED')">
+                          <i class="fas fa-times-circle"></i>
+                        </button>
+                      <% } %>
+                      <button class="action-btn-sm action-delete" onclick="deleteItem('Employer', <%= employer.getId() %>)">
                         <i class="fas fa-trash"></i>
                       </button>
                     </td>
@@ -570,31 +573,85 @@ pageEncoding="UTF-8"%>
 
       function approveJob(button, jobId) {
         if (confirm("Approve this job posting?")) {
-          const row = button.closest("tr");
-          const statusCell = row.querySelector("td:nth-child(5)");
-          statusCell.innerHTML =
-            '<span class="status-badge status-approved">Approved</span>';
-          const actionsCell = row.querySelector("td:nth-child(6)");
-          actionsCell.innerHTML = '<span style="font-size: 0.85rem; color: #888;">(approved)</span>';
-          showAlert("Job approved successfully!");
-
-          // Optional: Send approval to server
-          // fetch('/demo-1.0-SNAPSHOT/approveJob?jobId=' + jobId, {method: 'POST'});
+          fetch('<%= request.getContextPath() %>/approveJob', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'jobId=' + jobId + '&status=approved'
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showAlert("Job approved successfully!");
+              // Reload the page to show updated list
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            } else {
+              showAlert("Error: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showAlert("Error approving job");
+          });
         }
       }
 
       function rejectJob(button, jobId) {
         if (confirm("Reject this job posting?")) {
-          const row = button.closest("tr");
-          const statusCell = row.querySelector("td:nth-child(5)");
-          statusCell.innerHTML =
-            '<span class="status-badge status-rejected">Rejected</span>';
-          const actionsCell = row.querySelector("td:nth-child(6)");
-          actionsCell.innerHTML = '<span style="font-size: 0.85rem; color: #888;">(rejected)</span>';
-          showAlert("Job rejected!");
+          fetch('<%= request.getContextPath() %>/approveJob', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'jobId=' + jobId + '&status=rejected'
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showAlert("Job rejected successfully!");
+              // Reload the page to show updated list
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            } else {
+              showAlert("Error: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showAlert("Error rejecting job");
+          });
+        }
+      }
 
-          // Optional: Send rejection to server
-          // fetch('/demo-1.0-SNAPSHOT/rejectJob?jobId=' + jobId, {method: 'POST'});
+      function deleteJob(jobId) {
+        if (confirm("Are you sure you want to delete this job?")) {
+          fetch('<%= request.getContextPath() %>/deleteJob', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'jobId=' + jobId
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showAlert("Job deleted successfully!");
+              // Reload the page to show updated list
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            } else {
+              showAlert("Error: " + data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            showAlert("Error deleting job");
+          });
         }
       }
 
