@@ -44,26 +44,50 @@ public class JobDao {
                 ps.setInt(1, jobId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
+                        job = mapRow(rs);
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return job;
+    }
+
+    public List<Job> getRecentPendingJobs(int limit) {
+        List<Job> jobs = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM jobs WHERE LOWER(TRIM(status)) = 'pending' ORDER BY posted_at DESC LIMIT ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, limit);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        jobs.add(mapRow(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jobs;
+    }
+
+    private Job mapRow(ResultSet rs) throws SQLException {
+        Job job = new Job();
+        job.setJobId(rs.getInt("job_id"));
+        job.setEmployerId(rs.getInt("employer_id"));
+        job.setTitle(rs.getString("title"));
+        job.setDescription(rs.getString("description"));
+        job.setCategory(rs.getString("category"));
+        job.setLocationCity(rs.getString("location_city"));
+        job.setSalaryRange(rs.getString("salary_range"));
+        job.setJobType(rs.getString("job_type"));
+        job.setPostedAt(rs.getTimestamp("posted_at"));
+        job.setDeadline(rs.getDate("deadline"));
+        job.setStatus(rs.getString("status"));
+        job.setApprovedAt(rs.getTimestamp("approved_at"));
+        int approvedBy = rs.getInt("approved_by");
+        job.setApprovedBy(rs.wasNull() ? null : approvedBy);
         return job;
     }
 
@@ -75,21 +99,7 @@ public class JobDao {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Job job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
-                        jobs.add(job);
+                        jobs.add(mapRow(rs));
                     }
                 }
             }
@@ -108,21 +118,7 @@ public class JobDao {
                 ps.setInt(1, employerId);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Job job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
-                        jobs.add(job);
+                        jobs.add(mapRow(rs));
                     }
                 }
             }
@@ -140,21 +136,7 @@ public class JobDao {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Job job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
-                        jobs.add(job);
+                        jobs.add(mapRow(rs));
                     }
                 }
             }
@@ -183,7 +165,7 @@ public class JobDao {
     // Approve job
     public boolean approveJob(int jobId, int adminId) {
         try {
-            String sql = "UPDATE jobs SET status = 'approved', approved_at = NOW(), approved_by = ? WHERE job_id = ?";
+            String sql = "UPDATE jobs SET status = 'approved', approved_at = NOW(), approved_by = ? WHERE job_id = ? AND LOWER(TRIM(status)) = 'pending'";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, adminId);
                 ps.setInt(2, jobId);
@@ -199,7 +181,7 @@ public class JobDao {
     // Reject job
     public boolean rejectJob(int jobId) {
         try {
-            String sql = "UPDATE jobs SET status = 'rejected' WHERE job_id = ?";
+            String sql = "UPDATE jobs SET status = 'rejected' WHERE job_id = ? AND LOWER(TRIM(status)) = 'pending'";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, jobId);
                 int rows = ps.executeUpdate();
@@ -303,21 +285,7 @@ public class JobDao {
                 ps.setString(1, category);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Job job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
-                        jobs.add(job);
+                        jobs.add(mapRow(rs));
                     }
                 }
             }
@@ -336,21 +304,7 @@ public class JobDao {
                 ps.setString(1, location);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        Job job = new Job();
-                        job.setJobId(rs.getInt("job_id"));
-                        job.setEmployerId(rs.getInt("employer_id"));
-                        job.setTitle(rs.getString("title"));
-                        job.setDescription(rs.getString("description"));
-                        job.setCategory(rs.getString("category"));
-                        job.setLocationCity(rs.getString("location_city"));
-                        job.setSalaryRange(rs.getString("salary_range"));
-                        job.setJobType(rs.getString("job_type"));
-                        job.setPostedAt(rs.getTimestamp("posted_at"));
-                        job.setDeadline(rs.getDate("deadline"));
-                        job.setStatus(rs.getString("status"));
-                        job.setApprovedAt(rs.getTimestamp("approved_at"));
-                        job.setApprovedBy(rs.getInt("approved_by"));
-                        jobs.add(job);
+                        jobs.add(mapRow(rs));
                     }
                 }
             }

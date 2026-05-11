@@ -262,6 +262,51 @@ public class UserDao {
         return false;
     }
 
+    /**
+     * Approve only when account is still pending (prevents re-approving everyone / wrong transitions).
+     */
+    public boolean approveUserIfPending(int userId, String role) {
+        try {
+            String sql = "UPDATE users SET status = 'APPROVED' WHERE id = ? AND UPPER(TRIM(role)) = ? AND UPPER(TRIM(status)) = 'PENDING'";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setString(2, role.toUpperCase());
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean rejectUserIfPending(int userId, String role) {
+        try {
+            String sql = "UPDATE users SET status = 'REJECTED' WHERE id = ? AND UPPER(TRIM(role)) = ? AND UPPER(TRIM(status)) = 'PENDING'";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setString(2, role.toUpperCase());
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean deleteUserWithRole(int userId, String role) {
+        try {
+            String sql = "DELETE FROM users WHERE id = ? AND UPPER(TRIM(role)) = ? AND UPPER(TRIM(role)) <> 'ADMIN'";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setString(2, role.toUpperCase());
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // Update user profile
     public boolean updateUserProfile(User user) {
         try {
@@ -336,6 +381,26 @@ public class UserDao {
             e.printStackTrace();
         }
         return profile;
+    }
+
+    /** Creates a bare seeker_profile row when missing (legacy / edge-case users). */
+    public boolean insertSeekerProfileIfMissing(int userId) {
+        if (getSeekerProfile(userId) != null) {
+            return true;
+        }
+        try {
+            String sql = "INSERT INTO seeker_profile(user_id, address_city, skills, education, experience_year, resume_path) VALUES(?,?,?,?,0,NULL)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setNull(2, java.sql.Types.VARCHAR);
+                ps.setString(3, "");
+                ps.setString(4, "");
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // Update seeker profile
