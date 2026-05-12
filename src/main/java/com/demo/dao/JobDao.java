@@ -313,5 +313,84 @@ public class JobDao {
         }
         return jobs;
     }
+
+    // ===== APPLICATION METHODS =====
+
+    /** Get all applications submitted by a seeker (joined with job title). */
+    public List<com.demo.models.Application> getApplicationsBySeeker(int seekerId) {
+        List<com.demo.models.Application> apps = new ArrayList<>();
+        try {
+            String sql = "SELECT * FROM applications WHERE seeker_id = ? ORDER BY applied_at DESC";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        com.demo.models.Application a = new com.demo.models.Application();
+                        a.setId(rs.getInt("id"));
+                        a.setJobId(rs.getInt("job_id"));
+                        a.setSeekerId(rs.getInt("seeker_id"));
+                        a.setCoverLetter(rs.getString("cover_letter"));
+                        a.setStatus(rs.getString("status"));
+                        a.setAppliedAt(rs.getTimestamp("applied_at"));
+                        a.setReviewedAt(rs.getTimestamp("reviewed_at"));
+                        apps.add(a);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return apps;
+    }
+
+    /** Count applications by seeker. */
+    public long getApplicationCountBySeeker(int seekerId) {
+        try {
+            String sql = "SELECT COUNT(*) AS total FROM applications WHERE seeker_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return rs.getLong("total");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /** Check if seeker already applied to a job. */
+    public boolean hasApplied(int seekerId, int jobId) {
+        try {
+            String sql = "SELECT id FROM applications WHERE seeker_id = ? AND job_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                ps.setInt(2, jobId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /** Insert a new application. */
+    public boolean createApplication(com.demo.models.Application app) {
+        try {
+            String sql = "INSERT INTO applications(job_id, seeker_id, cover_letter, status) VALUES(?,?,?,?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, app.getJobId());
+                ps.setInt(2, app.getSeekerId());
+                ps.setString(3, app.getCoverLetter());
+                ps.setString(4, app.getStatus() != null ? app.getStatus() : "pending");
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
 

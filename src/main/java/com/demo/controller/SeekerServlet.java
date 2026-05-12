@@ -3,6 +3,8 @@ package com.demo.controller;
 import com.demo.controller.util.SeekerAuth;
 import com.demo.dao.JobDao;
 import com.demo.dao.UserDao;
+import com.demo.models.Application;
+import com.demo.models.Job;
 import com.demo.models.SeekerProfile;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 @WebServlet("/seeker")
 public class SeekerServlet extends HttpServlet {
@@ -32,6 +35,8 @@ public class SeekerServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
+
+        // Flash messages
         if (session != null) {
             Object ok = session.getAttribute("seekerFlashSuccess");
             if (ok != null) {
@@ -45,6 +50,29 @@ public class SeekerServlet extends HttpServlet {
             }
         }
 
+        // Route based on ?page= parameter
+        String page = req.getParameter("page");
+        if (page == null) page = "";
+
+        switch (page) {
+            case "applications":
+                handleApplicationsPage(req, resp, userId);
+                break;
+            case "saved":
+                handleSavedPage(req, resp, userId);
+                break;
+            case "browse":
+                handleBrowsePage(req, resp, userId);
+                break;
+            default:
+                handleDashboardPage(req, resp, userId);
+                break;
+        }
+    }
+
+    /** Dashboard page — profile + stats */
+    private void handleDashboardPage(HttpServletRequest req, HttpServletResponse resp, int userId)
+            throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao userDao = new UserDao(conn);
             JobDao jobDao = new JobDao(conn);
@@ -55,20 +83,61 @@ public class SeekerServlet extends HttpServlet {
             req.setAttribute("seekerUser", seekerUser);
             req.setAttribute("seekerProfile", seekerProfile);
             req.setAttribute("openJobsCount", jobDao.getApprovedJobCount());
+
+            // Application count for this seeker
+            req.setAttribute("applicationCount", jobDao.getApplicationCountBySeeker(userId));
+
             if (seekerUser != null && seekerUser.getDob() != null) {
                 req.setAttribute("dobString", new SimpleDateFormat("yyyy-MM-dd").format(seekerUser.getDob()));
             }
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("openJobsCount", 0L);
+            req.setAttribute("applicationCount", 0L);
             req.setAttribute("error", "Could not load seeker dashboard.");
         }
 
         req.getRequestDispatcher("/WEB-INF/seeker/dashboard.jsp").forward(req, resp);
     }
 
+    /** My Applications page */
+    private void handleApplicationsPage(HttpServletRequest req, HttpServletResponse resp, int userId)
+            throws ServletException, IOException {
+        try (Connection conn = DBConnection.getConnection()) {
+            JobDao jobDao = new JobDao(conn);
+            List<Application> apps = jobDao.getApplicationsBySeeker(userId);
+            req.setAttribute("applications", apps);
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "Could not load applications.");
+        }
+
+        req.getRequestDispatcher("/WEB-INF/seeker/applications.jsp").forward(req, resp);
+    }
+
+    /** Saved Jobs page (placeholder for now) */
+    private void handleSavedPage(HttpServletRequest req, HttpServletResponse resp, int userId)
+            throws ServletException, IOException {
+        req.getRequestDispatcher("/WEB-INF/seeker/saved.jsp").forward(req, resp);
+    }
+
+    /** Browse Jobs page — shows all approved jobs */
+    private void handleBrowsePage(HttpServletRequest req, HttpServletResponse resp, int userId)
+            throws ServletException, IOException {
+        try (Connection conn = DBConnection.getConnection()) {
+            JobDao jobDao = new JobDao(conn);
+            List<Job> jobs = jobDao.getApprovedJobs();
+            req.setAttribute("jobs", jobs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "Could not load jobs.");
+        }
+
+        req.getRequestDispatcher("/WEB-INF/seeker/browse.jsp").forward(req, resp);
+    }
+
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         if (!SeekerAuth.requireSeeker(req, resp)) {
             return;
         }
@@ -78,6 +147,64 @@ public class SeekerServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
+
+        String action = req.getParameter("action");
+
+        // Handle apply action
+        if ("apply".equals(action)) {
+            handleApply(req, resp, session, userId);
+            return;
+        }
+
+        // Default: profile update
+        handleProfileUpdate(req, resp, session, userId);
+    }
+
+    /** Apply to a job */
+    private void handleApply(HttpServletRequest req, HttpServletResponse resp,
+                             HttpSession session, int userId) throws IOException {
+        String jobIdStr = req.getParameter("jobId");
+        String coverLetter = req.getParameter("coverLetter");
+
+        if (jobIdStr == null || jobIdStr.isBlank()) {
+            session.setAttribute("seekerFlashError", "Invalid job.");
+            resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+            return;
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+            JobDao jobDao = new JobDao(conn);
+            int jobId = Integer.parseInt(jobIdStr.trim());
+
+            // Check if already applied
+            if (jobDao.hasApplied(userId, jobId)) {
+                session.setAttribute("seekerFlashError", "You have already applied to this job.");
+                resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+                return;
+            }
+
+            Application app = new Application();
+            app.setSeekerId(userId);
+            app.setJobId(jobId);
+            app.setCoverLetter(coverLetter != null ? coverLetter.trim() : "");
+            app.setStatus("pending");
+
+            if (jobDao.createApplication(app)) {
+                session.setAttribute("seekerFlashSuccess", "Applied successfully!");
+            } else {
+                session.setAttribute("seekerFlashError", "Could not apply. Try again.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("seekerFlashError", "Error applying to job.");
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+    }
+
+    /** Update seeker profile */
+    private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp,
+                                     HttpSession session, int userId) throws IOException {
         String fullName = req.getParameter("fullName");
         String phone = req.getParameter("phone");
         String location = req.getParameter("location");

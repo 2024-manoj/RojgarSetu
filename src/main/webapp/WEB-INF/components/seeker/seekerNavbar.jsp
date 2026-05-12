@@ -1,19 +1,43 @@
+<%--
+  Seeker top bar (fixed header) — teal / emerald theme.
+  No JavaScript — pure HTML.
+--%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<header class="admin-header-bar">
+<%
+    String seekerHeaderName = "Guest User";
+    com.demo.models.User navUser = (com.demo.models.User) session.getAttribute("user");
+    if (navUser != null && navUser.getFullName() != null) {
+        seekerHeaderName = navUser.getFullName();
+    }
+%>
+<header class="seeker-header-bar">
+
     <div class="logo">
-        <h2>Rojgar<span>Setu</span> <span style="font-weight:400;font-size:0.85rem;opacity:0.9">Seeker</span></h2>
+        <h2>Rojgar<span>Setu</span></h2>
     </div>
+
     <div class="header-right">
-        <div class="admin-name">
-            <i class="fa-solid fa-user"></i>
-            <span>
-                <%= request.getAttribute("seekerUser") != null
-                        ? ((com.demo.models.User) request.getAttribute("seekerUser")).getFullName()
-                        : "Seeker" %>
-            </span>
+
+        <!-- Quick action links (no JS) -->
+        <div class="header-actions">
+            <a href="<%= request.getContextPath() %>/seeker?page=browse"
+               class="header-icon-btn" title="Browse Jobs">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
         </div>
+
+        <!-- User badge -->
+        <div class="seeker-name">
+            <i class="fa-solid fa-user-circle"></i>
+            <span><%= seekerHeaderName %></span>
+        </div>
+
+        <!-- Logout -->
         <a class="logout-btn" href="<%= request.getContextPath() %>/logout">
-            <i class="fa-solid fa-right-from-bracket"></i> Logout
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
         </a>
+
     </div>
+
 </header>

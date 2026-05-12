@@ -207,8 +207,9 @@
         <% } %>
 
     </main>
+    <%@include file="../components/admin/adminFooter.jsp"%>
+
 </div>
-<%@include file="../components/admin/adminFooter.jsp"%>
 
 <script>
     function toggleEdit() {
