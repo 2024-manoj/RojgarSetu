@@ -55,6 +55,9 @@ public class SeekerServlet extends HttpServlet {
         if (page == null) page = "";
 
         switch (page) {
+            case "profile":
+                handleProfilePage(req, resp, userId);
+                break;
             case "applications":
                 handleApplicationsPage(req, resp, userId);
                 break;
@@ -98,6 +101,29 @@ public class SeekerServlet extends HttpServlet {
         }
 
         req.getRequestDispatcher("/WEB-INF/seeker/dashboard.jsp").forward(req, resp);
+    }
+
+    /** Edit Profile page — shows profile form only */
+    private void handleProfilePage(HttpServletRequest req, HttpServletResponse resp, int userId)
+            throws ServletException, IOException {
+        try (Connection conn = DBConnection.getConnection()) {
+            UserDao userDao = new UserDao(conn);
+
+            User seekerUser = userDao.getUserById(userId);
+            SeekerProfile seekerProfile = userDao.getSeekerProfile(userId);
+
+            req.setAttribute("seekerUser", seekerUser);
+            req.setAttribute("seekerProfile", seekerProfile);
+
+            if (seekerUser != null && seekerUser.getDob() != null) {
+                req.setAttribute("dobString", new SimpleDateFormat("yyyy-MM-dd").format(seekerUser.getDob()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "Could not load profile.");
+        }
+
+        req.getRequestDispatcher("/WEB-INF/seeker/profile.jsp").forward(req, resp);
     }
 
     /** My Applications page */
@@ -216,7 +242,7 @@ public class SeekerServlet extends HttpServlet {
 
         if (fullName == null || fullName.isBlank()) {
             session.setAttribute("seekerFlashError", "Full name is required.");
-            resp.sendRedirect(req.getContextPath() + "/seeker");
+            resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
             return;
         }
 
@@ -236,18 +262,18 @@ public class SeekerServlet extends HttpServlet {
             UserDao dao = new UserDao(conn);
             if (!dao.updateUserProfile(user)) {
                 session.setAttribute("seekerFlashError", "Could not update account profile.");
-                resp.sendRedirect(req.getContextPath() + "/seeker");
+                resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
             if (!dao.insertSeekerProfileIfMissing(userId)) {
                 session.setAttribute("seekerFlashError", "Could not prepare seeker profile.");
-                resp.sendRedirect(req.getContextPath() + "/seeker");
+                resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
             SeekerProfile profile = dao.getSeekerProfile(userId);
             if (profile == null) {
                 session.setAttribute("seekerFlashError", "Seeker profile not found.");
-                resp.sendRedirect(req.getContextPath() + "/seeker");
+                resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
             profile.setUserId(userId);
@@ -284,6 +310,6 @@ public class SeekerServlet extends HttpServlet {
             e.printStackTrace();
             session.setAttribute("seekerFlashError", "An error occurred while saving.");
         }
-        resp.sendRedirect(req.getContextPath() + "/seeker");
+        resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
     }
 }

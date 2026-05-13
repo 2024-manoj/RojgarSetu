@@ -60,8 +60,8 @@
         <li class="sidebar-section-label">Account</li>
 
         <li>
-            <a href="<%= request.getContextPath() %>/seeker"
-               class="">
+            <a href="<%= request.getContextPath() %>/seeker?page=profile"
+               class="<%= "profile".equals(currentPage) ? "active" : "" %>">
                 <i class="fa-solid fa-user-pen"></i>
                 <span>Edit Profile</span>
             </a>
