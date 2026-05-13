@@ -31,7 +31,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
           <i class="fas fa-user-circle"></i>
           <span>John Doe</span>
         </div>
-        <a href="#" class="logout-btn" onclick="logout()"
+        <a href="javascript:void(0)" class="logout-btn" onclick="openLogoutModal()"
           ><i class="fas fa-sign-out-alt"></i> Logout</a
         >
       </div>
@@ -62,7 +62,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             >
           </li>
           <li>
-            <a href="#" onclick="logout()"
+            <a href="javascript:void(0)" onclick="openLogoutModal()"
               ><i class="fas fa-sign-out-alt"></i> Logout</a
             >
           </li>
@@ -664,11 +664,7 @@ Web Development, UI/UX Design, Project Management, Data Analysis</textarea
       }
 
       // ===== LOGOUT =====
-      function logout() {
-        if (confirm("Are you sure you want to logout?")) {
-          window.location.href = "${pageContext.request.contextPath}/login";
-        }
-      }
+      // Handled by the logoutModal.jsp component
 
       // Close modal on outside click
       window.onclick = function (event) {
@@ -678,5 +674,6 @@ Web Development, UI/UX Design, Project Management, Data Analysis</textarea
         }
       };
     </script>
+    <%@ include file="../components/logoutModal.jsp" %>
   </body>
 </html>

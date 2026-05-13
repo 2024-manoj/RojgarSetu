@@ -36,7 +36,7 @@ pageEncoding="UTF-8"%>
             session.getAttribute("adminName") : "Admin" %></span
           >
         </div>
-        <a href="<%= request.getContextPath() %>/logout" class="logout-btn"
+        <a href="javascript:void(0)" class="logout-btn" onclick="openLogoutModal()"
           ><i class="fas fa-sign-out-alt"></i> Logout</a
         >
       </div>
@@ -490,6 +490,7 @@ pageEncoding="UTF-8"%>
         </div>
       </div>
     </div>
+    <%@ include file="../components/logoutModal.jsp" %>
     <script src="<%= request.getContextPath() %>/static/admin.js"></script>
   </body>
 </html>

@@ -21,3 +21,5 @@
     </div>
 
 </div>
+
+<%@ include file="../logoutModal.jsp" %>

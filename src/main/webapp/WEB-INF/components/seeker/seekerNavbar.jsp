@@ -33,7 +33,7 @@
         </div>
 
         <!-- Logout -->
-        <a class="logout-btn" href="<%= request.getContextPath() %>/logout">
+        <a class="logout-btn" href="javascript:void(0)" onclick="openLogoutModal()">
             <i class="fa-solid fa-right-from-bracket"></i>
             <span>Logout</span>
         </a>

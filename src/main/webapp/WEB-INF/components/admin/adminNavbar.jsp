@@ -11,7 +11,7 @@
             <i class="fa-solid fa-user-shield"></i>
             <span><%= session.getAttribute("adminName") != null ? session.getAttribute("adminName") : "Admin" %></span>
         </div>
-        <a class="logout-btn" href="<%= request.getContextPath() %>/logout">
+        <a class="logout-btn" href="javascript:void(0)" onclick="openLogoutModal()">
             <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
     </div>

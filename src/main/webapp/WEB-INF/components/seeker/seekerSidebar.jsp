@@ -68,7 +68,7 @@
         </li>
 
         <li>
-            <a href="<%= request.getContextPath() %>/logout">
+            <a href="javascript:void(0)" onclick="openLogoutModal()">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>Logout</span>
             </a>

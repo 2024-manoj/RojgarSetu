@@ -5,4 +5,5 @@
     </main>
 </div>
 
+<%@ include file="../logoutModal.jsp" %>
 <%@ include file="seekerFooter.jsp" %>
