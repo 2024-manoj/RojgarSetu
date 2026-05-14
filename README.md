@@ -7,14 +7,24 @@
 ## 🌍 Background
 In the Koshi Province of Nepal (Dharan, Itahari, Biratnagar), many youths migrate to Kathmandu or abroad seeking work, unaware of the growing opportunities within their own local cities. **RojgarSetu** (Bridge to Employment) acts as a digital bridge to connect local employers with qualified local workers, eliminating agency fees and reducing unnecessary migration.
 
-## 🖼️ System Screenshot
+## 🖼️ System Preview 
 
-![RojgarSetu Homepage](images/homepage.png?raw=true)
-*Figure: RojgarSetu Landing Page *
+![RojgarSetu Homepage](images/homepages.png?raw=true)
+                    *Figure: RojgarSetu Landing Page *
+ 
+
 
 ![RojgarSetu Adminpage](images/adminpage.png?raw=true)
-*Figure: RojgarSetu Admin Page *
+                        *Figure: RojgarSetu Admin Page *
 
+
+![RojgarSetu Employer Dashboard](images/employer_dashboard.png?raw=true)
+                   *Figure: RojgarSetu Employer Dashboard *
+
+
+![RojgarSetu Seeker Dashboard](images/seeker_dashboard.png?raw=true)
+                  *Figure: RojgarSetu Seeker Dashboard *
+    
 
 
 ## 🏢 About the System
