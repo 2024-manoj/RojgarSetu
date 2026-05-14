@@ -20,7 +20,10 @@ pageEncoding="UTF-8"%>
       rel="stylesheet"
       href="<%= request.getContextPath() %>/static/admin.css"
     />
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/static/global.css" />
+    <link
+      rel="stylesheet"
+      href="<%= request.getContextPath() %>/static/global.css"
+    />
   </head>
   <body>
     <!-- Header Bar -->
@@ -36,7 +39,10 @@ pageEncoding="UTF-8"%>
             session.getAttribute("adminName") : "Admin" %></span
           >
         </div>
-        <a href="javascript:void(0)" class="logout-btn" onclick="openLogoutModal()"
+        <a
+          href="javascript:void(0)"
+          class="logout-btn"
+          onclick="openLogoutModal()"
           ><i class="fas fa-sign-out-alt"></i> Logout</a
         >
       </div>

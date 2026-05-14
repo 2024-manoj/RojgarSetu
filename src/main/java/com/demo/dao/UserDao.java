@@ -6,13 +6,24 @@ import com.demo.models.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * DAO for core users table operations.
+ * Handles: register, login, getUserById, update, delete, list users.
+ *
+ * Profile-specific ops → SeekerDao / EmployerDao
+ * Stats/counts → StatsDao
+ */
 public class UserDao {
     private Connection conn;
 
     public UserDao(Connection conn) {
         this.conn = conn;
     }
+
+    // ===== REGISTRATION =====
 
     public boolean registerUser(User user, SeekerProfile seekerProfile, EmployerProfile employerProfile) {
         boolean success = false;
@@ -33,7 +44,7 @@ public class UserDao {
                 if (user.getDob() != null) {
                     ps.setDate(7, new java.sql.Date(user.getDob().getTime()));
                 } else {
-                    ps.setNull(7, java.sql.Types.DATE);
+                    ps.setNull(7, Types.DATE);
                 }
 
                 int i = ps.executeUpdate();
@@ -83,6 +94,8 @@ public class UserDao {
         return success;
     }
 
+    // ===== LOGIN =====
+
     public User getUserByEmailAndPassword(String email, String password) {
         User user = null;
         try {
@@ -93,17 +106,7 @@ public class UserDao {
                     if (rs.next()) {
                         String hashedPassword = rs.getString("password");
                         if (hashedPassword != null && BCrypt.checkpw(password, hashedPassword)) {
-                            user = new User();
-                            user.setId(rs.getInt("id"));
-                            user.setFullName(rs.getString("full_name"));
-                            user.setEmail(rs.getString("email"));
-                            user.setPhone(rs.getString("phone"));
-                            user.setPassword(hashedPassword);
-                            user.setRole(rs.getString("role"));
-                            user.setStatus(rs.getString("status"));
-                            user.setLocation(rs.getString("location"));
-                            user.setDob(rs.getDate("dob"));
-                            user.setCreatedAt(rs.getTimestamp("created_at"));
+                            user = mapRow(rs);
                         }
                     }
                 }
@@ -114,7 +117,8 @@ public class UserDao {
         return user;
     }
 
-    // Get user by ID
+    // ===== SINGLE USER LOOKUP =====
+
     public User getUserById(int userId) {
         User user = null;
         try {
@@ -123,17 +127,7 @@ public class UserDao {
                 ps.setInt(1, userId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        user = new User();
-                        user.setId(rs.getInt("id"));
-                        user.setFullName(rs.getString("full_name"));
-                        user.setEmail(rs.getString("email"));
-                        user.setPhone(rs.getString("phone"));
-                        user.setPassword(rs.getString("password"));
-                        user.setRole(rs.getString("role"));
-                        user.setStatus(rs.getString("status"));
-                        user.setLocation(rs.getString("location"));
-                        user.setDob(rs.getDate("dob"));
-                        user.setCreatedAt(rs.getTimestamp("created_at"));
+                        user = mapRow(rs);
                     }
                 }
             }
@@ -143,7 +137,6 @@ public class UserDao {
         return user;
     }
 
-    // Check if email already exists
     public boolean emailExists(String email) {
         try {
             String sql = "SELECT id FROM users WHERE email = ?";
@@ -159,26 +152,31 @@ public class UserDao {
         return false;
     }
 
-    // Get all users
-    public java.util.List<User> getAllUsers() {
-        java.util.List<User> users = new java.util.ArrayList<>();
+    // ===== USER LISTS =====
+
+    public List<User> getAllUsers() {
+        return getUsersByFilter(null);
+    }
+
+    public List<User> getAllSeekers() {
+        return getUsersByFilter("SEEKER");
+    }
+
+    public List<User> getAllEmployers() {
+        return getUsersByFilter("EMPLOYER");
+    }
+
+    private List<User> getUsersByFilter(String role) {
+        List<User> users = new ArrayList<>();
         try {
-            String sql = "SELECT * FROM users ORDER BY created_at DESC";
+            String sql = role != null
+                    ? "SELECT * FROM users WHERE role = ? ORDER BY created_at DESC"
+                    : "SELECT * FROM users ORDER BY created_at DESC";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                if (role != null) ps.setString(1, role);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
-                        User user = new User();
-                        user.setId(rs.getInt("id"));
-                        user.setFullName(rs.getString("full_name"));
-                        user.setEmail(rs.getString("email"));
-                        user.setPhone(rs.getString("phone"));
-                        user.setPassword(rs.getString("password"));
-                        user.setRole(rs.getString("role"));
-                        user.setStatus(rs.getString("status"));
-                        user.setLocation(rs.getString("location"));
-                        user.setDob(rs.getDate("dob"));
-                        user.setCreatedAt(rs.getTimestamp("created_at"));
-                        users.add(user);
+                        users.add(mapRow(rs));
                     }
                 }
             }
@@ -188,73 +186,22 @@ public class UserDao {
         return users;
     }
 
-    // Get all seekers
-    public java.util.List<User> getAllSeekers() {
-        java.util.List<User> seekers = new java.util.ArrayList<>();
-        try {
-            String sql = "SELECT * FROM users WHERE role = 'SEEKER' ORDER BY created_at DESC";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        User user = new User();
-                        user.setId(rs.getInt("id"));
-                        user.setFullName(rs.getString("full_name"));
-                        user.setEmail(rs.getString("email"));
-                        user.setPhone(rs.getString("phone"));
-                        user.setPassword(rs.getString("password"));
-                        user.setRole(rs.getString("role"));
-                        user.setStatus(rs.getString("status"));
-                        user.setLocation(rs.getString("location"));
-                        user.setDob(rs.getDate("dob"));
-                        user.setCreatedAt(rs.getTimestamp("created_at"));
-                        seekers.add(user);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return seekers;
-    }
+    // ===== UPDATE / DELETE =====
 
-    // Get all employers
-    public java.util.List<User> getAllEmployers() {
-        java.util.List<User> employers = new java.util.ArrayList<>();
+    public boolean updateUserProfile(User user) {
         try {
-            String sql = "SELECT * FROM users WHERE role = 'EMPLOYER' ORDER BY created_at DESC";
+            String sql = "UPDATE users SET full_name = ?, phone = ?, location = ?, dob = ? WHERE id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        User user = new User();
-                        user.setId(rs.getInt("id"));
-                        user.setFullName(rs.getString("full_name"));
-                        user.setEmail(rs.getString("email"));
-                        user.setPhone(rs.getString("phone"));
-                        user.setPassword(rs.getString("password"));
-                        user.setRole(rs.getString("role"));
-                        user.setStatus(rs.getString("status"));
-                        user.setLocation(rs.getString("location"));
-                        user.setDob(rs.getDate("dob"));
-                        user.setCreatedAt(rs.getTimestamp("created_at"));
-                        employers.add(user);
-                    }
+                ps.setString(1, user.getFullName());
+                ps.setString(2, user.getPhone());
+                ps.setString(3, user.getLocation());
+                if (user.getDob() != null) {
+                    ps.setDate(4, new java.sql.Date(user.getDob().getTime()));
+                } else {
+                    ps.setNull(4, Types.DATE);
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return employers;
-    }
-
-    // Update user status (APPROVED, REJECTED, PENDING)
-    public boolean updateUserStatus(int userId, String status) {
-        try {
-            String sql = "UPDATE users SET status = ? WHERE id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, status);
-                ps.setInt(2, userId);
-                int rows = ps.executeUpdate();
-                return rows > 0;
+                ps.setInt(5, user.getId());
+                return ps.executeUpdate() > 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,9 +209,20 @@ public class UserDao {
         return false;
     }
 
-    /**
-     * Approve only when account is still pending (prevents re-approving everyone / wrong transitions).
-     */
+    public boolean updateUserStatus(int userId, String status) {
+        try {
+            String sql = "UPDATE users SET status = ? WHERE id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, status);
+                ps.setInt(2, userId);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean approveUserIfPending(int userId, String role) {
         try {
             String sql = "UPDATE users SET status = 'APPROVED' WHERE id = ? AND UPPER(TRIM(role)) = ? AND UPPER(TRIM(status)) = 'PENDING'";
@@ -293,6 +251,19 @@ public class UserDao {
         return false;
     }
 
+    public boolean deleteUser(int userId) {
+        try {
+            String sql = "DELETE FROM users WHERE id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public boolean deleteUserWithRole(int userId, String role) {
         try {
             String sql = "DELETE FROM users WHERE id = ? AND UPPER(TRIM(role)) = ? AND UPPER(TRIM(role)) <> 'ADMIN'";
@@ -307,257 +278,20 @@ public class UserDao {
         return false;
     }
 
-    // Update user profile
-    public boolean updateUserProfile(User user) {
-        try {
-            String sql = "UPDATE users SET full_name = ?, phone = ?, location = ?, dob = ? WHERE id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, user.getFullName());
-                ps.setString(2, user.getPhone());
-                ps.setString(3, user.getLocation());
-                if (user.getDob() != null) {
-                    ps.setDate(4, new java.sql.Date(user.getDob().getTime()));
-                } else {
-                    ps.setNull(4, java.sql.Types.DATE);
-                }
-                ps.setInt(5, user.getId());
-                int rows = ps.executeUpdate();
-                return rows > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    // ===== ROW MAPPER =====
 
-    // Get seeker profile by user ID
-    public SeekerProfile getSeekerProfile(int userId) {
-        SeekerProfile profile = null;
-        try {
-            String sql = "SELECT * FROM seeker_profile WHERE user_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        profile = new SeekerProfile();
-                        profile.setId(rs.getInt("id"));
-                        profile.setUserId(rs.getInt("user_id"));
-                        profile.setAddressCity(rs.getString("address_city"));
-                        profile.setSkills(rs.getString("skills"));
-                        profile.setEducation(rs.getString("education"));
-                        profile.setExperienceYear(rs.getInt("experience_year"));
-                        profile.setResumePath(rs.getString("resume_path"));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return profile;
-    }
-
-    // Get employer profile by user ID
-    public EmployerProfile getEmployerProfile(int userId) {
-        EmployerProfile profile = null;
-        try {
-            String sql = "SELECT * FROM employer_profile WHERE user_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        profile = new EmployerProfile();
-                        profile.setId(rs.getInt("id"));
-                        profile.setUserId(rs.getInt("user_id"));
-                        profile.setCompanyName(rs.getString("company_name"));
-                        profile.setCompanyAddress(rs.getString("company_address"));
-                        profile.setCompanyCategory(rs.getString("company_category"));
-                        profile.setCompanyCity(rs.getString("company_city"));
-                        profile.setCompanyDescription(rs.getString("company_description"));
-                        profile.setContactPerson(rs.getString("contact_person"));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return profile;
-    }
-
-    /** Creates a bare seeker_profile row when missing (legacy / edge-case users). */
-    public boolean insertSeekerProfileIfMissing(int userId) {
-        if (getSeekerProfile(userId) != null) {
-            return true;
-        }
-        try {
-            String sql = "INSERT INTO seeker_profile(user_id, address_city, skills, education, experience_year, resume_path) VALUES(?,?,?,?,0,NULL)";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                ps.setNull(2, java.sql.Types.VARCHAR);
-                ps.setString(3, "");
-                ps.setString(4, "");
-                return ps.executeUpdate() > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Update seeker profile
-    public boolean updateSeekerProfile(SeekerProfile profile) {
-        try {
-            String sql = "UPDATE seeker_profile SET address_city = ?, skills = ?, education = ?, experience_year = ?, resume_path = ? WHERE user_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, profile.getAddressCity());
-                ps.setString(2, profile.getSkills());
-                ps.setString(3, profile.getEducation());
-                ps.setInt(4, profile.getExperienceYear());
-                ps.setString(5, profile.getResumePath());
-                ps.setInt(6, profile.getUserId());
-                int rows = ps.executeUpdate();
-                return rows > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Update employer profile
-    public boolean updateEmployerProfile(EmployerProfile profile) {
-        try {
-            String sql = "UPDATE employer_profile SET company_name = ?, company_address = ?, company_category = ?, company_city = ?, company_description = ?, contact_person = ? WHERE user_id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setString(1, profile.getCompanyName());
-                ps.setString(2, profile.getCompanyAddress());
-                ps.setString(3, profile.getCompanyCategory());
-                ps.setString(4, profile.getCompanyCity());
-                ps.setString(5, profile.getCompanyDescription());
-                ps.setString(6, profile.getContactPerson());
-                ps.setInt(7, profile.getUserId());
-                int rows = ps.executeUpdate();
-                return rows > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Delete user
-    public boolean deleteUser(int userId) {
-        try {
-            String sql = "DELETE FROM users WHERE id = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                int rows = ps.executeUpdate();
-                return rows > 0;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    // Get total user count
-    public long getTotalUsers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Get total seeker count
-    public long getTotalSeekers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users WHERE role = 'SEEKER'";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Get total employer count
-    public long getTotalEmployers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users WHERE role = 'EMPLOYER'";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Get pending user count (for approval)
-    public long getPendingUsers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users WHERE status = 'PENDING'";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Get approved user count
-    public long getApprovedUsers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users WHERE status = 'APPROVED'";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    // Get rejected user count
-    public long getRejectedUsers() {
-        try {
-            String sql = "SELECT COUNT(*) as total FROM users WHERE status = 'REJECTED'";
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return rs.getLong("total");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
+    private User mapRow(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt("id"));
+        user.setFullName(rs.getString("full_name"));
+        user.setEmail(rs.getString("email"));
+        user.setPhone(rs.getString("phone"));
+        user.setPassword(rs.getString("password"));
+        user.setRole(rs.getString("role"));
+        user.setStatus(rs.getString("status"));
+        user.setLocation(rs.getString("location"));
+        user.setDob(rs.getDate("dob"));
+        user.setCreatedAt(rs.getTimestamp("created_at"));
+        return user;
     }
 }

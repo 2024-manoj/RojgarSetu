@@ -2,6 +2,7 @@ package com.demo.controller;
 
 import com.demo.controller.util.AdminAuth;
 import com.demo.dao.JobDao;
+import com.demo.dao.StatsDao;
 import com.demo.dao.UserDao;
 import com.demo.models.Job;
 import com.demo.models.User;
@@ -36,15 +37,14 @@ public class AdminReportsServlet extends HttpServlet {
             return;
         }
         try (Connection conn = DBConnection.getConnection()) {
-            UserDao userDao = new UserDao(conn);
-            JobDao jobDao = new JobDao(conn);
-            req.setAttribute("totalUsers", userDao.getTotalUsers());
-            req.setAttribute("totalSeekers", userDao.getTotalSeekers());
-            req.setAttribute("totalEmployers", userDao.getTotalEmployers());
-            req.setAttribute("pendingUsers", userDao.getPendingUsers());
-            req.setAttribute("totalJobs", jobDao.getTotalJobs());
-            req.setAttribute("pendingJobs", jobDao.getPendingJobs());
-            req.setAttribute("approvedJobs", jobDao.getApprovedJobCount());
+            StatsDao statsDao = new StatsDao(conn);
+            req.setAttribute("totalUsers", statsDao.getTotalUsers());
+            req.setAttribute("totalSeekers", statsDao.getTotalSeekers());
+            req.setAttribute("totalEmployers", statsDao.getTotalEmployers());
+            req.setAttribute("pendingUsers", statsDao.getPendingUsers());
+            req.setAttribute("totalJobs", statsDao.getTotalJobs());
+            req.setAttribute("pendingJobs", statsDao.getPendingJobs());
+            req.setAttribute("approvedJobs", statsDao.getApprovedJobCount());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -2,6 +2,7 @@ package com.demo.controller;
 
 import com.demo.controller.util.AdminAuth;
 import com.demo.dao.JobDao;
+import com.demo.dao.StatsDao;
 import com.demo.dao.UserDao;
 import com.demo.models.Job;
 import com.demo.utils.DBConnection;
@@ -26,14 +27,15 @@ public class AdminDashboardServlet extends HttpServlet {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao userDao = new UserDao(conn);
             JobDao jobDao = new JobDao(conn);
+            StatsDao statsDao = new StatsDao(conn);
 
-            req.setAttribute("totalUsers", userDao.getTotalUsers());
-            req.setAttribute("totalEmployers", userDao.getTotalEmployers());
-            req.setAttribute("totalSeekers", userDao.getTotalSeekers());
-            req.setAttribute("totalJobs", jobDao.getTotalJobs());
-            req.setAttribute("pendingApprovals", jobDao.getPendingJobs());
-            req.setAttribute("pendingUsers", userDao.getPendingUsers());
-            req.setAttribute("approvedJobs", jobDao.getApprovedJobCount());
+            req.setAttribute("totalUsers", statsDao.getTotalUsers());
+            req.setAttribute("totalEmployers", statsDao.getTotalEmployers());
+            req.setAttribute("totalSeekers", statsDao.getTotalSeekers());
+            req.setAttribute("totalJobs", statsDao.getTotalJobs());
+            req.setAttribute("pendingApprovals", statsDao.getPendingJobs());
+            req.setAttribute("pendingUsers", statsDao.getPendingUsers());
+            req.setAttribute("approvedJobs", statsDao.getApprovedJobCount());
 
             List<Job> pendingJobs = jobDao.getRecentPendingJobs(20);
             req.setAttribute("jobs", pendingJobs);

@@ -1,7 +1,10 @@
 package com.demo.controller;
 
 import com.demo.controller.util.SeekerAuth;
+import com.demo.dao.ApplicationDao;
 import com.demo.dao.JobDao;
+import com.demo.dao.SeekerDao;
+import com.demo.dao.StatsDao;
 import com.demo.dao.UserDao;
 import com.demo.models.Application;
 import com.demo.models.Job;
@@ -78,17 +81,19 @@ public class SeekerServlet extends HttpServlet {
             throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao userDao = new UserDao(conn);
-            JobDao jobDao = new JobDao(conn);
+            SeekerDao seekerDao = new SeekerDao(conn);
+            StatsDao statsDao = new StatsDao(conn);
+            ApplicationDao appDao = new ApplicationDao(conn);
 
             User seekerUser = userDao.getUserById(userId);
-            SeekerProfile seekerProfile = userDao.getSeekerProfile(userId);
+            SeekerProfile seekerProfile = seekerDao.getSeekerProfile(userId);
 
             req.setAttribute("seekerUser", seekerUser);
             req.setAttribute("seekerProfile", seekerProfile);
-            req.setAttribute("openJobsCount", jobDao.getApprovedJobCount());
+            req.setAttribute("openJobsCount", statsDao.getApprovedJobCount());
 
             // Application count for this seeker
-            req.setAttribute("applicationCount", jobDao.getApplicationCountBySeeker(userId));
+            req.setAttribute("applicationCount", appDao.getApplicationCountBySeeker(userId));
 
             if (seekerUser != null && seekerUser.getDob() != null) {
                 req.setAttribute("dobString", new SimpleDateFormat("yyyy-MM-dd").format(seekerUser.getDob()));
@@ -108,9 +113,10 @@ public class SeekerServlet extends HttpServlet {
             throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao userDao = new UserDao(conn);
+            SeekerDao seekerDao = new SeekerDao(conn);
 
             User seekerUser = userDao.getUserById(userId);
-            SeekerProfile seekerProfile = userDao.getSeekerProfile(userId);
+            SeekerProfile seekerProfile = seekerDao.getSeekerProfile(userId);
 
             req.setAttribute("seekerUser", seekerUser);
             req.setAttribute("seekerProfile", seekerProfile);
@@ -130,8 +136,8 @@ public class SeekerServlet extends HttpServlet {
     private void handleApplicationsPage(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
-            JobDao jobDao = new JobDao(conn);
-            List<Application> apps = jobDao.getApplicationsBySeeker(userId);
+            ApplicationDao appDao = new ApplicationDao(conn);
+            List<Application> apps = appDao.getApplicationsBySeeker(userId);
             req.setAttribute("applications", apps);
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,11 +205,11 @@ public class SeekerServlet extends HttpServlet {
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-            JobDao jobDao = new JobDao(conn);
+            ApplicationDao appDao = new ApplicationDao(conn);
             int jobId = Integer.parseInt(jobIdStr.trim());
 
             // Check if already applied
-            if (jobDao.hasApplied(userId, jobId)) {
+            if (appDao.hasApplied(userId, jobId)) {
                 session.setAttribute("seekerFlashError", "You have already applied to this job.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
                 return;
@@ -215,7 +221,7 @@ public class SeekerServlet extends HttpServlet {
             app.setCoverLetter(coverLetter != null ? coverLetter.trim() : "");
             app.setStatus("pending");
 
-            if (jobDao.createApplication(app)) {
+            if (appDao.createApplication(app)) {
                 session.setAttribute("seekerFlashSuccess", "Applied successfully!");
             } else {
                 session.setAttribute("seekerFlashError", "Could not apply. Try again.");
@@ -259,18 +265,20 @@ public class SeekerServlet extends HttpServlet {
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-            UserDao dao = new UserDao(conn);
-            if (!dao.updateUserProfile(user)) {
+            UserDao userDao = new UserDao(conn);
+            SeekerDao seekerDao = new SeekerDao(conn);
+
+            if (!userDao.updateUserProfile(user)) {
                 session.setAttribute("seekerFlashError", "Could not update account profile.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
-            if (!dao.insertSeekerProfileIfMissing(userId)) {
+            if (!seekerDao.insertSeekerProfileIfMissing(userId)) {
                 session.setAttribute("seekerFlashError", "Could not prepare seeker profile.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
-            SeekerProfile profile = dao.getSeekerProfile(userId);
+            SeekerProfile profile = seekerDao.getSeekerProfile(userId);
             if (profile == null) {
                 session.setAttribute("seekerFlashError", "Seeker profile not found.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
@@ -297,8 +305,8 @@ public class SeekerServlet extends HttpServlet {
             }
             profile.setResumePath(resumePath);
 
-            if (dao.updateSeekerProfile(profile)) {
-                User refreshed = dao.getUserById(userId);
+            if (seekerDao.updateSeekerProfile(profile)) {
+                User refreshed = userDao.getUserById(userId);
                 if (refreshed != null) {
                     session.setAttribute("user", refreshed);
                 }

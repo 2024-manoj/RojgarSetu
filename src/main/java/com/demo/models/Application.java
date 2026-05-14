@@ -12,6 +12,11 @@ public class Application {
     private Timestamp appliedAt;
     private Timestamp reviewedAt;
 
+    // Transient display fields (not persisted)
+    private String jobTitle;
+    private String seekerName;
+    private String seekerEmail;
+
     public Application() {}
 
     public int getId() { return id; }
@@ -34,4 +39,13 @@ public class Application {
 
     public Timestamp getReviewedAt() { return reviewedAt; }
     public void setReviewedAt(Timestamp reviewedAt) { this.reviewedAt = reviewedAt; }
+
+    public String getJobTitle() { return jobTitle; }
+    public void setJobTitle(String jobTitle) { this.jobTitle = jobTitle; }
+
+    public String getSeekerName() { return seekerName; }
+    public void setSeekerName(String seekerName) { this.seekerName = seekerName; }
+
+    public String getSeekerEmail() { return seekerEmail; }
+    public void setSeekerEmail(String seekerEmail) { this.seekerEmail = seekerEmail; }
 }
