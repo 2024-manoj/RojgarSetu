@@ -1,118 +1,115 @@
 <%--
-  Shared Logout Confirmation Modal — Premium animated experience.
-  Include this at the bottom of any page (before </body>) that has a logout button.
-  
-  Usage:
-    <%@ include file="../components/logoutModal.jsp" %>
-  
-  Trigger:
-    Any element with onclick="openLogoutModal()" will open it.
+  Simple Logout Button Component
+  Usage: <%@ include file="../components/logoutModal.jsp" %>
+  Trigger: Any element with onclick="openLogoutModal()"
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<!-- ===== LOGOUT CONFIRMATION MODAL ===== -->
-<div class="logout-modal-overlay" id="logoutModalOverlay">
-    <div class="logout-modal" id="logoutModal">
-
-        <!-- Close button -->
-        <button class="logout-modal-close" onclick="closeLogoutModal()" aria-label="Close">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-
-        <!-- Step 1: Confirmation -->
-        <div class="logout-step logout-step-confirm" id="logoutStepConfirm">
-            <div class="logout-icon-ring">
-                <div class="logout-icon-circle">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                </div>
-            </div>
-            <h3>Leaving so soon?</h3>
-            <p>You are about to sign out of your <strong>RojgarSetu</strong> account. Any unsaved changes will be lost.</p>
-            <div class="logout-modal-actions">
-                <button class="logout-btn-cancel" onclick="closeLogoutModal()">
-                    <i class="fa-solid fa-arrow-left"></i> Stay Here
-                </button>
-                <button class="logout-btn-confirm" onclick="confirmLogout()">
-                    Sign Out <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
-            </div>
+<!-- ===== LOGOUT MODAL ===== -->
+<div class="logout-overlay" id="logoutOverlay">
+    <div class="logout-box" id="logoutBox">
+        <div class="logout-icon">
+            <i class="fa-solid fa-right-from-bracket"></i>
         </div>
-
-        <!-- Step 2: Logging out animation -->
-        <div class="logout-step logout-step-progress" id="logoutStepProgress" style="display:none;">
-            <div class="logout-spinner-ring">
-                <div class="logout-spinner"></div>
-            </div>
-            <h3>Signing you out...</h3>
-            <p>Thank you for visiting. See you again soon!</p>
-            <div class="logout-progress-bar">
-                <div class="logout-progress-fill" id="logoutProgressFill"></div>
-            </div>
+        <h3>Sign out?</h3>
+        <p>You'll be logged out of your RojgarSetu account.</p>
+        <div class="logout-actions">
+            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <button class="btn-signout" onclick="doLogout()">Sign Out</button>
         </div>
-
-        <!-- Step 3: Goodbye -->
-        <div class="logout-step logout-step-bye" id="logoutStepBye" style="display:none;">
-            <div class="logout-check-ring">
-                <i class="fa-solid fa-check"></i>
-            </div>
-            <h3>Goodbye! 👋</h3>
-            <p>You've been signed out successfully. Redirecting...</p>
-        </div>
-
     </div>
 </div>
 
+<style>
+    .logout-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    .logout-overlay.active { display: flex; }
+
+    .logout-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 32px 28px 24px;
+        width: 100%;
+        max-width: 340px;
+        text-align: center;
+        box-shadow: 0 8px 30px rgba(0,0,0,.15);
+        animation: popIn .2s ease;
+    }
+    @keyframes popIn {
+        from { transform: scale(.92); opacity: 0; }
+        to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .logout-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #fff3f3;
+        color: #e53e3e;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+    .logout-box h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a202c;
+    }
+    .logout-box p {
+        margin: 0 0 24px;
+        font-size: 14px;
+        color: #718096;
+        line-height: 1.5;
+    }
+
+    .logout-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .logout-actions button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: opacity .15s;
+    }
+    .logout-actions button:hover { opacity: .85; }
+
+    .btn-cancel  { background: #edf2f7; color: #4a5568; }
+    .btn-signout { background: #e53e3e; color: #fff; }
+</style>
+
 <script>
-    // ===== LOGOUT MODAL LOGIC =====
     function openLogoutModal() {
-        const overlay = document.getElementById('logoutModalOverlay');
-        const modal   = document.getElementById('logoutModal');
-
-        // Reset to step 1
-        document.getElementById('logoutStepConfirm').style.display  = '';
-        document.getElementById('logoutStepProgress').style.display = 'none';
-        document.getElementById('logoutStepBye').style.display      = 'none';
-
-        overlay.classList.add('active');
-        setTimeout(function() { modal.classList.add('active'); }, 30);
+        document.getElementById('logoutOverlay').classList.add('active');
     }
-
     function closeLogoutModal() {
-        const overlay = document.getElementById('logoutModalOverlay');
-        const modal   = document.getElementById('logoutModal');
-        modal.classList.remove('active');
-        setTimeout(function() { overlay.classList.remove('active'); }, 300);
+        document.getElementById('logoutOverlay').classList.remove('active');
+    }
+    function doLogout() {
+        window.location.href = '<%= request.getContextPath() %>/logout';
     }
 
-    function confirmLogout() {
-        // Switch to progress step
-        document.getElementById('logoutStepConfirm').style.display  = 'none';
-        document.getElementById('logoutStepProgress').style.display = '';
-
-        // Animate progress bar
-        var fill = document.getElementById('logoutProgressFill');
-        fill.style.width = '0%';
-        setTimeout(function() { fill.style.width = '100%'; }, 60);
-
-        // After 1.6s show goodbye step
-        setTimeout(function() {
-            document.getElementById('logoutStepProgress').style.display = 'none';
-            document.getElementById('logoutStepBye').style.display      = '';
-        }, 1600);
-
-        // After 2.4s redirect to logout
-        setTimeout(function() {
-            // Use the contextPath variable set by JSP
-            window.location.href = '<%= request.getContextPath() %>/logout';
-        }, 2400);
-    }
-
-    // Close on overlay click
-    document.getElementById('logoutModalOverlay').addEventListener('click', function(e) {
+    // Close on backdrop click
+    document.getElementById('logoutOverlay').addEventListener('click', function(e) {
         if (e.target === this) closeLogoutModal();
     });
 
-    // Close on Escape key
+    // Close on Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeLogoutModal();
     });
