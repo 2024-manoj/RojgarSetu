@@ -7,6 +7,16 @@
 ## 🌍 Background
 In the Koshi Province of Nepal (Dharan, Itahari, Biratnagar), many youths migrate to Kathmandu or abroad seeking work, unaware of the growing opportunities within their own local cities. **RojgarSetu** (Bridge to Employment) acts as a digital bridge to connect local employers with qualified local workers, eliminating agency fees and reducing unnecessary migration.
 
+## 🖼️ System Screenshot
+
+![RojgarSetu Homepage](images/homepage.png?raw=true)
+*Figure: RojgarSetu Landing Page *
+
+![RojgarSetu Adminpage](images/adminpage.png?raw=true)
+*Figure: RojgarSetu Admin Page *
+
+
+
 ## 🏢 About the System
 RojgarSetu is a modern, web-based platform specifically designed for the **Koshi Province**. It provides a direct connection between job seekers and businesses, fostering economic growth within the local community.
 
@@ -56,3 +66,6 @@ The system focuses on the major hubs of **Koshi Province**, including:
 3. Configure **Tomcat Server** and set the Application Context to `/`.
 4. Import the provided SQL schema into your MySQL database.
 5. Run the project and access it at `http://localhost:8080/`.
+
+
+
