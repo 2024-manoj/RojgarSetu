@@ -12,18 +12,27 @@ import com.demo.models.SeekerProfile;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.UUID;
 
 @WebServlet("/seeker")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 5 * 1024 * 1024,
+        maxRequestSize = 8 * 1024 * 1024
+)
 public class SeekerServlet extends HttpServlet {
 
     @Override
@@ -194,9 +203,10 @@ public class SeekerServlet extends HttpServlet {
 
     /** Apply to a job */
     private void handleApply(HttpServletRequest req, HttpServletResponse resp,
-                             HttpSession session, int userId) throws IOException {
+                             HttpSession session, int userId) throws IOException, ServletException {
         String jobIdStr = req.getParameter("jobId");
         String coverLetter = req.getParameter("coverLetter");
+        String resumePath = null;
 
         if (jobIdStr == null || jobIdStr.isBlank()) {
             session.setAttribute("seekerFlashError", "Invalid job.");
@@ -206,6 +216,7 @@ public class SeekerServlet extends HttpServlet {
 
         try (Connection conn = DBConnection.getConnection()) {
             ApplicationDao appDao = new ApplicationDao(conn);
+            SeekerDao seekerDao = new SeekerDao(conn);
             int jobId = Integer.parseInt(jobIdStr.trim());
 
             // Check if already applied
@@ -215,10 +226,17 @@ public class SeekerServlet extends HttpServlet {
                 return;
             }
 
+            resumePath = savePdfUpload(req.getPart("resumeFile"), userId, "application");
+            if (resumePath == null) {
+                SeekerProfile profile = seekerDao.getSeekerProfile(userId);
+                resumePath = profile != null ? profile.getResumePath() : null;
+            }
+
             Application app = new Application();
             app.setSeekerId(userId);
             app.setJobId(jobId);
             app.setCoverLetter(coverLetter != null ? coverLetter.trim() : "");
+            app.setResumePath(resumePath);
             app.setStatus("pending");
 
             if (appDao.createApplication(app)) {
@@ -236,7 +254,7 @@ public class SeekerServlet extends HttpServlet {
 
     /** Update seeker profile */
     private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp,
-                                     HttpSession session, int userId) throws IOException {
+                                     HttpSession session, int userId) throws IOException, ServletException {
         String fullName = req.getParameter("fullName");
         String phone = req.getParameter("phone");
         String location = req.getParameter("location");
@@ -245,6 +263,7 @@ public class SeekerServlet extends HttpServlet {
         String skills = req.getParameter("skills");
         String addressCity = req.getParameter("addressCity");
         String expStr = req.getParameter("experienceYear");
+        String uploadedResumePath = null;
 
         if (fullName == null || fullName.isBlank()) {
             session.setAttribute("seekerFlashError", "Full name is required.");
@@ -267,7 +286,11 @@ public class SeekerServlet extends HttpServlet {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao userDao = new UserDao(conn);
             SeekerDao seekerDao = new SeekerDao(conn);
+            User existingUser = userDao.getUserById(userId);
 
+            if (existingUser != null && existingUser.getDob() != null && dobStr == null) {
+                user.setDob(existingUser.getDob());
+            }
             if (!userDao.updateUserProfile(user)) {
                 session.setAttribute("seekerFlashError", "Could not update account profile.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
@@ -287,7 +310,9 @@ public class SeekerServlet extends HttpServlet {
             profile.setUserId(userId);
             profile.setEducation(education != null ? education.trim() : "");
             profile.setSkills(skills != null ? skills.trim() : "");
-            profile.setAddressCity(addressCity != null && !addressCity.isBlank() ? addressCity.trim() : null);
+            if (addressCity != null) {
+                profile.setAddressCity(!addressCity.isBlank() ? addressCity.trim() : null);
+            }
 
             int experienceYear = profile.getExperienceYear();
             if (expStr != null && !expStr.isBlank()) {
@@ -299,7 +324,10 @@ public class SeekerServlet extends HttpServlet {
             profile.setExperienceYear(experienceYear);
 
             String resumePath = profile.getResumePath();
-            if (req.getParameter("resumePath") != null) {
+            uploadedResumePath = savePdfUpload(req.getPart("resumeFile"), userId, "profile");
+            if (uploadedResumePath != null) {
+                resumePath = uploadedResumePath;
+            } else if (req.getParameter("resumePath") != null) {
                 String r = req.getParameter("resumePath").trim();
                 resumePath = r.isEmpty() ? null : r;
             }
@@ -319,5 +347,33 @@ public class SeekerServlet extends HttpServlet {
             session.setAttribute("seekerFlashError", "An error occurred while saving.");
         }
         resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
+    }
+
+    private String savePdfUpload(Part part, int userId, String prefix) throws IOException {
+        if (part == null || part.getSize() == 0) {
+            return null;
+        }
+
+        String submitted = part.getSubmittedFileName();
+        String lowerName = submitted != null ? submitted.toLowerCase() : "";
+        String contentType = part.getContentType() != null ? part.getContentType().toLowerCase() : "";
+        if (!lowerName.endsWith(".pdf") && !"application/pdf".equals(contentType)) {
+            throw new IOException("Only PDF resume files are allowed.");
+        }
+
+        String uploadRoot = getServletContext().getRealPath("/uploads/resumes");
+        if (uploadRoot == null) {
+            uploadRoot = System.getProperty("java.io.tmpdir") + File.separator + "rojgarsetu-resumes";
+        }
+
+        File uploadDir = new File(uploadRoot);
+        if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+            throw new IOException("Could not create resume upload folder.");
+        }
+
+        String fileName = prefix + "-user-" + userId + "-" + UUID.randomUUID() + ".pdf";
+        File destination = new File(uploadDir, fileName);
+        part.write(destination.getAbsolutePath());
+        return "/uploads/resumes/" + fileName;
     }
 }

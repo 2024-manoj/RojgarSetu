@@ -25,7 +25,7 @@
             <div class="table-wrapper">
                 <table class="data-table">
                     <thead><tr>
-                        <th>#</th><th>Applicant</th><th>Email</th><th>Job Title</th><th>Applied On</th><th>Status</th><th>Actions</th>
+                        <th>#</th><th>Applicant</th><th>Email</th><th>Job Title</th><th>Resume</th><th>Applied On</th><th>Status</th><th>Actions</th>
                     </tr></thead>
                     <tbody>
                         <% if (applications != null && !applications.isEmpty()) {
@@ -37,10 +37,19 @@
                         %>
                         <tr>
                             <td><strong>#<%= app.getId() %></strong></td>
-                            <td><div class="applicant-info"><i class="fa-solid fa-user-circle applicant-avatar"></i><strong><%= app.getSeekerName() != null ? app.getSeekerName() : "—" %></strong></div></td>
-                            <td><%= app.getSeekerEmail() != null ? app.getSeekerEmail() : "—" %></td>
-                            <td><%= app.getJobTitle() != null ? app.getJobTitle() : "—" %></td>
-                            <td><%= app.getAppliedAt() != null ? dateFmt.format(app.getAppliedAt()) : "—" %></td>
+                            <td><div class="applicant-info"><i class="fa-solid fa-user-circle applicant-avatar"></i><strong><%= app.getSeekerName() != null ? app.getSeekerName() : "-" %></strong></div></td>
+                            <td><%= app.getSeekerEmail() != null ? app.getSeekerEmail() : "-" %></td>
+                            <td><%= app.getJobTitle() != null ? app.getJobTitle() : "-" %></td>
+                            <td>
+                                <% if (app.getResumePath() != null && !app.getResumePath().isBlank()) { %>
+                                    <a class="muted-btn" href="<%= request.getContextPath() + app.getResumePath() %>" target="_blank">
+                                        <i class="fa-solid fa-file-pdf"></i> View
+                                    </a>
+                                <% } else { %>
+                                    -
+                                <% } %>
+                            </td>
+                            <td><%= app.getAppliedAt() != null ? dateFmt.format(app.getAppliedAt()) : "-" %></td>
                             <td><span class="status-badge <%= badgeClass %>"><%= st %></span></td>
                             <td class="action-cell">
                                 <% if ("pending".equalsIgnoreCase(st)) { %>
@@ -69,7 +78,7 @@
                             </td>
                         </tr>
                         <% } } else { %>
-                        <tr><td colspan="7">No applications received yet. Post more jobs to attract talent!</td></tr>
+                        <tr><td colspan="8">No applications received yet. Post more jobs to attract talent!</td></tr>
                         <% } %>
                     </tbody>
                 </table>

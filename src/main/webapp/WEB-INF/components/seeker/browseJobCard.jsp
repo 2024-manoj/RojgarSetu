@@ -34,6 +34,7 @@
     String cDeadline = cardJob.getDeadline() != null ? cardDateFmt.format(cardJob.getDeadline()) : "—";
     String cDescription = cardJob.getDescription() != null ? cardJob.getDescription() : "";
     if (cDescription.length() > 120) cDescription = cDescription.substring(0, 120) + "...";
+    String cTitleAttr = cTitle.replace("&", "&amp;").replace("\"", "&quot;").replace("<", "&lt;").replace(">", "&gt;");
 
     // Job type styling
     String cTypeIcon = "fa-solid fa-clock";
@@ -101,13 +102,12 @@
             <button type="button" class="browse-detail-btn" onclick="showJobDetail(<%= cardJob.getJobId() %>)">
                 <i class="fa-solid fa-eye"></i> View
             </button>
-            <form action="<%= request.getContextPath() %>/seeker" method="post" style="display:inline;">
-                <input type="hidden" name="action" value="apply"/>
-                <input type="hidden" name="jobId" value="<%= cardJob.getJobId() %>"/>
-                <button type="submit" class="browse-apply-btn">
-                    <i class="fa-solid fa-paper-plane"></i> Apply
-                </button>
-            </form>
+            <button type="button" class="browse-apply-btn"
+                    data-job-id="<%= cardJob.getJobId() %>"
+                    data-job-title="<%= cTitleAttr %>"
+                    onclick="showApplyModal(this)">
+                <i class="fa-solid fa-paper-plane"></i> Apply
+            </button>
         </div>
     </div>
 </div>

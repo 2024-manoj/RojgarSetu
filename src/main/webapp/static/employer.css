@@ -202,6 +202,13 @@
     padding: 28px 32px;
 }
 
+.employer-welcome-side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
 .employer-welcome-text h2 {
     font-size: 1.3rem;
     font-weight: 700;
@@ -241,13 +248,58 @@
     font-size: 0.85rem;
 }
 
+.employer-welcome-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.employer-hero-btn {
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.employer-hero-btn.primary {
+    color: #0f2847;
+    background: #F4A623;
+    box-shadow: 0 8px 18px rgba(244, 166, 35, 0.24);
+}
+
+.employer-hero-btn.secondary {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.employer-hero-btn:hover {
+    transform: translateY(-2px);
+}
+
+.employer-hero-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
 @media (max-width: 640px) {
     .employer-welcome-content {
         flex-direction: column;
-        text-align: center;
+        align-items: stretch;
         gap: 12px;
         padding: 24px 20px;
     }
+    .employer-welcome-text { text-align: center; }
+    .employer-welcome-side { align-items: stretch; }
+    .employer-welcome-date,
+    .employer-welcome-actions { justify-content: center; }
+    .employer-hero-btn { flex: 1; }
 }
 
 /* ===== EMPLOYER STAT CARDS ===== */
@@ -331,6 +383,297 @@
 
 .stat-sub i {
     font-size: 0.7rem;
+}
+
+/* ===== EMPLOYER DASHBOARD EXPERIENCE ===== */
+.employer-dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
+    gap: 20px;
+}
+
+.employer-focus-card,
+.employer-health-card,
+.employer-quick-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04), 0 0 0 1px rgba(0,0,0,0.03);
+}
+
+.employer-focus-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    border-left: 4px solid #F4A623;
+}
+
+.employer-focus-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: rgba(244, 166, 35, 0.14);
+    color: #b87a00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.employer-eyebrow {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.employer-focus-copy h3 {
+    font-size: 1rem;
+    color: #1a1a2e;
+    margin-bottom: 3px;
+}
+
+.employer-focus-copy p {
+    font-size: 0.82rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.employer-focus-action {
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #1A3C6E;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+}
+
+.employer-focus-action:hover {
+    background: #0f2847;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(26, 60, 110, 0.22);
+}
+
+.employer-health-card {
+    padding: 18px 20px;
+}
+
+.employer-health-card h3 {
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.employer-health-card h3 i {
+    color: #1A3C6E;
+}
+
+.pipeline-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pipeline-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.pipeline-row:last-child {
+    border-bottom: 0;
+}
+
+.pipeline-row span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6b7280;
+    font-size: 0.83rem;
+    font-weight: 600;
+}
+
+.pipeline-row strong {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+}
+
+.approved-dot { color: #059669; }
+.pending-dot { color: #d97706; }
+.muted-dot { color: #9ca3af; }
+
+.employer-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.employer-quick-card {
+    min-height: 82px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.employer-quick-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.employer-quick-card > i {
+    color: #d1d5db;
+    font-size: 0.8rem;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.employer-quick-card:hover > i {
+    color: #1A3C6E;
+    transform: translateX(3px);
+}
+
+.employer-quick-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.employer-quick-icon.blue {
+    background: rgba(26, 60, 110, 0.08);
+    color: #1A3C6E;
+}
+
+.employer-quick-icon.amber {
+    background: rgba(244, 166, 35, 0.12);
+    color: #b87a00;
+}
+
+.employer-quick-icon.green {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+}
+
+.employer-quick-card strong {
+    display: block;
+    color: #1a1a2e;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.employer-quick-card small {
+    display: block;
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.employer-section-title {
+    justify-content: space-between;
+}
+
+.employer-section-title span {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.employer-section-title a {
+    color: #1A3C6E;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.employer-section-title a:hover {
+    color: #0f2847;
+}
+
+.employer-job-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.employer-job-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: rgba(26, 60, 110, 0.07);
+    color: #1A3C6E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.78rem;
+}
+
+.employer-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    font-style: normal;
+}
+
+.employer-empty-state span {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgba(26, 60, 110, 0.08);
+    color: #1A3C6E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.employer-empty-state strong {
+    color: #1a1a2e;
+    font-size: 0.95rem;
+}
+
+.employer-empty-state p {
+    color: #9ca3af;
+    font-size: 0.82rem;
+}
+
+.employer-empty-state a {
+    color: #fff;
+    background: #1A3C6E;
+    border-radius: 9px;
+    padding: 8px 14px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.employer-empty-state a:hover {
+    background: #0f2847;
 }
 
 /* ===== EMPLOYER PROFILE HERO ===== */
@@ -773,10 +1116,31 @@
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    .employer-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 640px) {
     .stats-grid {
         grid-template-columns: 1fr;
+    }
+    .employer-focus-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .employer-focus-icon {
+        margin: 0 auto;
+    }
+    .employer-focus-action {
+        width: 100%;
+    }
+    .employer-quick-actions {
+        grid-template-columns: 1fr;
+    }
+    .employer-section-title {
+        align-items: flex-start;
+        gap: 8px;
+        flex-direction: column;
     }
 }

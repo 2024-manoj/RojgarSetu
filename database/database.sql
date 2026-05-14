@@ -57,6 +57,7 @@ CREATE TABLE applications (
                               job_id INT NOT NULL,
                               seeker_id INT NOT NULL,
                               cover_letter TEXT,
+                              resume_path VARCHAR(500),
                               status ENUM('pending', 'shortlisted', 'rejected', 'hired') DEFAULT 'pending',
                               applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                               reviewed_at TIMESTAMP NULL,

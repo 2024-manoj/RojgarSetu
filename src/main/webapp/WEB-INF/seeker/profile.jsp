@@ -49,7 +49,7 @@
                 </div>
                 <div>
                     <h3>Edit Profile</h3>
-                    <p>Update your personal information and job preferences</p>
+                    <p>Keep only the details employers need to review you</p>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
             </div>
             <% } else { %>
             <div class="seeker-form-body">
-                <form action="<%= request.getContextPath() %>/seeker" method="post">
+                <form action="<%= request.getContextPath() %>/seeker" method="post" enctype="multipart/form-data">
 
                     <%-- Email (read-only) --%>
                     <div class="seeker-email-readonly">
@@ -97,14 +97,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="dob">
-                                <i class="fa-solid fa-calendar"></i> Date of Birth
-                            </label>
-                            <input id="dob" name="dob" type="date"
-                                   value="<%= dobString != null ? dobString : "" %>"/>
-                        </div>
-
-                        <div class="form-group">
                             <label for="education">
                                 <i class="fa-solid fa-graduation-cap"></i> Education
                             </label>
@@ -130,22 +122,19 @@
                                    value="<%= sp != null && sp.getSkills() != null ? sp.getSkills() : "" %>"/>
                         </div>
 
-                        <div class="form-group">
-                            <label for="addressCity">
-                                <i class="fa-solid fa-city"></i> City (profile)
+                        <div class="form-group full-width">
+                            <label for="resumeFile">
+                                <i class="fa-solid fa-file-pdf"></i> Upload Resume (PDF)
                             </label>
-                            <input id="addressCity" name="addressCity" type="text"
-                                   placeholder="Current city"
-                                   value="<%= sp != null && sp.getAddressCity() != null ? sp.getAddressCity() : "" %>"/>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="resumePath">
-                                <i class="fa-solid fa-file-lines"></i> Resume Path / URL
-                            </label>
-                            <input id="resumePath" name="resumePath" type="text"
-                                   placeholder="/uploads/resume.pdf or https://..."
-                                   value="<%= sp != null && sp.getResumePath() != null ? sp.getResumePath() : "" %>"/>
+                            <input id="resumeFile" name="resumeFile" type="file" accept="application/pdf,.pdf"/>
+                            <% if (sp != null && sp.getResumePath() != null && !sp.getResumePath().isBlank()) { %>
+                                <p class="seeker-upload-note">
+                                    Current resume saved.
+                                    <a href="<%= request.getContextPath() + sp.getResumePath() %>" target="_blank">View PDF</a>
+                                </p>
+                            <% } else { %>
+                                <p class="seeker-upload-note">Choose a PDF from your computer. Maximum size: 5 MB.</p>
+                            <% } %>
                         </div>
 
                     </div>

@@ -92,6 +92,49 @@
     </div>
 </div>
 
+<%-- Apply modal shell --%>
+<div class="browse-modal-overlay" id="applyJobModal">
+    <div class="browse-modal apply-modal">
+        <div class="browse-modal-header">
+            <h3>Apply for Job</h3>
+            <button type="button" class="browse-modal-close" onclick="closeApplyModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form class="apply-form" action="<%= request.getContextPath() %>/seeker" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="apply"/>
+            <input type="hidden" name="jobId" id="applyJobId"/>
+
+            <div class="apply-job-summary">
+                <span><i class="fa-solid fa-briefcase"></i></span>
+                <div>
+                    <small>Applying for</small>
+                    <strong id="applyJobTitle">Selected job</strong>
+                </div>
+            </div>
+
+            <div class="apply-field">
+                <label for="coverLetter"><i class="fa-solid fa-message"></i> Cover Letter</label>
+                <textarea id="coverLetter" name="coverLetter" rows="5"
+                          placeholder="Write a short message for the employer"></textarea>
+            </div>
+
+            <div class="apply-field">
+                <label for="applyResumeFile"><i class="fa-solid fa-file-pdf"></i> Resume PDF</label>
+                <input id="applyResumeFile" name="resumeFile" type="file" accept="application/pdf,.pdf"/>
+                <p>Upload a PDF from your computer. If you leave this empty, your saved profile resume will be used.</p>
+            </div>
+
+            <div class="apply-actions">
+                <button type="button" class="browse-detail-btn" onclick="closeApplyModal()">Cancel</button>
+                <button type="submit" class="browse-apply-btn">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Application
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     /* Minimal JS — only for showing/hiding the modal.
        All job details are pre-rendered server-side via scriptlets. */
@@ -106,10 +149,28 @@
         document.getElementById('jobDetailModal').classList.remove('show');
         document.body.style.overflow = '';
     }
+    function showApplyModal(button) {
+        var jobId = button.getAttribute('data-job-id');
+        var jobTitle = button.getAttribute('data-job-title') || 'Selected job';
+        document.getElementById('applyJobId').value = jobId;
+        document.getElementById('applyJobTitle').textContent = jobTitle;
+        document.getElementById('applyJobModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeApplyModal() {
+        document.getElementById('applyJobModal').classList.remove('show');
+        document.body.style.overflow = '';
+    }
     document.getElementById('jobDetailModal').addEventListener('click', function(e) {
         if (e.target === this) closeJobModal();
     });
+    document.getElementById('applyJobModal').addEventListener('click', function(e) {
+        if (e.target === this) closeApplyModal();
+    });
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeJobModal();
+        if (e.key === 'Escape') {
+            closeJobModal();
+            closeApplyModal();
+        }
     });
 </script>

@@ -8,6 +8,7 @@ public class Application {
     private int jobId;
     private int seekerId;
     private String coverLetter;
+    private String resumePath;
     private String status;     // pending, shortlisted, rejected, hired
     private Timestamp appliedAt;
     private Timestamp reviewedAt;
@@ -30,6 +31,9 @@ public class Application {
 
     public String getCoverLetter() { return coverLetter; }
     public void setCoverLetter(String coverLetter) { this.coverLetter = coverLetter; }
+
+    public String getResumePath() { return resumePath; }
+    public void setResumePath(String resumePath) { this.resumePath = resumePath; }
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }

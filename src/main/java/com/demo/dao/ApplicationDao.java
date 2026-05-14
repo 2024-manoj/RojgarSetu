@@ -21,12 +21,14 @@ public class ApplicationDao {
     /** Insert a new application. */
     public boolean createApplication(Application app) {
         try {
-            String sql = "INSERT INTO applications(job_id, seeker_id, cover_letter, status) VALUES(?,?,?,?)";
+            ensureResumePathColumn();
+            String sql = "INSERT INTO applications(job_id, seeker_id, cover_letter, resume_path, status) VALUES(?,?,?,?,?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, app.getJobId());
                 ps.setInt(2, app.getSeekerId());
                 ps.setString(3, app.getCoverLetter());
-                ps.setString(4, app.getStatus() != null ? app.getStatus() : "pending");
+                ps.setString(4, app.getResumePath());
+                ps.setString(5, app.getStatus() != null ? app.getStatus() : "pending");
                 return ps.executeUpdate() > 0;
             }
         } catch (Exception e) {
@@ -156,9 +158,28 @@ public class ApplicationDao {
         a.setJobId(rs.getInt("job_id"));
         a.setSeekerId(rs.getInt("seeker_id"));
         a.setCoverLetter(rs.getString("cover_letter"));
+        try {
+            a.setResumePath(rs.getString("resume_path"));
+        } catch (SQLException ignored) {
+            a.setResumePath(null);
+        }
         a.setStatus(rs.getString("status"));
         a.setAppliedAt(rs.getTimestamp("applied_at"));
         a.setReviewedAt(rs.getTimestamp("reviewed_at"));
         return a;
+    }
+
+    private void ensureResumePathColumn() {
+        try {
+            DatabaseMetaData meta = conn.getMetaData();
+            try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "applications", "resume_path")) {
+                if (rs.next()) return;
+            }
+            try (Statement st = conn.createStatement()) {
+                st.executeUpdate("ALTER TABLE applications ADD COLUMN resume_path VARCHAR(500) AFTER cover_letter");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
