@@ -69,6 +69,69 @@ public class JobDao {
         return queryJobs("SELECT * FROM jobs WHERE status = 'approved' ORDER BY posted_at DESC");
     }
 
+    /** Get distinct non-empty categories from approved jobs. */
+    public List<String> getDistinctCategories() {
+        List<String> cats = new ArrayList<>();
+        try {
+            String sql = "SELECT DISTINCT category FROM jobs WHERE status = 'approved' AND category IS NOT NULL AND TRIM(category) != '' ORDER BY category";
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) { cats.add(rs.getString("category")); }
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return cats;
+    }
+
+    /** Get distinct non-empty locations from approved jobs. */
+    public List<String> getDistinctLocations() {
+        List<String> locs = new ArrayList<>();
+        try {
+            String sql = "SELECT DISTINCT location_city FROM jobs WHERE status = 'approved' AND location_city IS NOT NULL AND TRIM(location_city) != '' ORDER BY location_city";
+            try (PreparedStatement ps = conn.prepareStatement(sql);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) { locs.add(rs.getString("location_city")); }
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return locs;
+    }
+
+    public List<Job> searchApprovedJobs(String keyword, String district, String[] categories, String[] locations) {
+        List<Job> jobs = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM jobs WHERE status = 'approved'");
+        List<String> params = new ArrayList<>();
+
+        if (keyword != null && !keyword.isBlank()) {
+            sql.append(" AND (LOWER(title) LIKE ? OR LOWER(category) LIKE ? OR LOWER(description) LIKE ?)");
+            String like = "%" + keyword.trim().toLowerCase().replace("-", " ") + "%";
+            params.add(like);
+            params.add(like);
+            params.add(like);
+        }
+
+        if (district != null && !district.isBlank()) {
+            sql.append(" AND LOWER(location_city) LIKE ?");
+            params.add("%" + district.trim().toLowerCase().replace("-", " ") + "%");
+        }
+
+        appendInFilter(sql, params, "category", categories);
+        appendInFilter(sql, params, "location_city", locations);
+        sql.append(" ORDER BY posted_at DESC");
+
+        try (PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setString(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    jobs.add(mapRow(rs));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jobs;
+    }
+
     public List<Job> getJobsByEmployer(int employerId) {
         List<Job> jobs = new ArrayList<>();
         try {
@@ -268,6 +331,30 @@ public class JobDao {
             e.printStackTrace();
         }
         return jobs;
+    }
+
+    private void appendInFilter(StringBuilder sql, List<String> params, String column, String[] values) {
+        if (values == null || values.length == 0) {
+            return;
+        }
+
+        List<String> cleanValues = new ArrayList<>();
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                cleanValues.add(value.trim().toLowerCase());
+            }
+        }
+        if (cleanValues.isEmpty()) {
+            return;
+        }
+
+        sql.append(" AND LOWER(").append(column).append(") IN (");
+        for (int i = 0; i < cleanValues.size(); i++) {
+            if (i > 0) sql.append(",");
+            sql.append("?");
+            params.add(cleanValues.get(i));
+        }
+        sql.append(")");
     }
 
     private Job mapRow(ResultSet rs) throws SQLException {

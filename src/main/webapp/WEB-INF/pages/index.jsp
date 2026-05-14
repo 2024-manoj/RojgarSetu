@@ -24,6 +24,10 @@ language="java" %>
       rel="stylesheet"
       href="${pageContext.request.contextPath}/static/global.css"
     />
+    <link
+      rel="stylesheet"
+      href="${pageContext.request.contextPath}/static/landing.css"
+    />
   </head>
   <body>
     <%@ include file="/WEB-INF/components/Navbar.jsp"%>
@@ -41,19 +45,29 @@ language="java" %>
         </p>
 
         <!-- Search Bar -->
-        <div class="hero-search">
+        <form class="hero-search" action="${pageContext.request.contextPath}/jobs" method="get">
           <div class="search-input-wrapper">
             <i class="fas fa-magnifying-glass search-icon"></i>
-            <input
-              type="text"
+            <select
+              name="job"
               class="search-input"
-              placeholder="Search job title or keyword"
-            />
+              aria-label="Select job category"
+            >
+              <option value="">Search job title or category</option>
+              <option value="software-developer">Software Developer</option>
+              <option value="accountant">Accountant</option>
+              <option value="teacher">Teacher</option>
+              <option value="sales-executive">Sales Executive</option>
+              <option value="receptionist">Receptionist</option>
+              <option value="marketing-officer">Marketing Officer</option>
+              <option value="driver">Driver</option>
+              <option value="internship">Internship</option>
+            </select>
           </div>
 
           <div class="search-select-wrapper">
             <i class="fas fa-location-dot select-icon"></i>
-            <select class="search-select">
+            <select class="search-select" name="district">
               <option value="">All Districts</option>
               <option value="sunsari">Sunsari</option>
               <option value="morang">Morang</option>
@@ -72,26 +86,26 @@ language="java" %>
             </select>
           </div>
 
-          <button class="search-btn">
+          <button class="search-btn" type="submit">
             <i class="fas fa-search"></i> Search Jobs
           </button>
-        </div>
+        </form>
 
         <!-- Quick Stats -->
         <div class="hero-stats">
           <div class="stat-item">
             <i class="fas fa-briefcase"></i>
-            <span><strong>500+</strong> Active Jobs</span>
+            <span><strong><%= request.getAttribute("activeJobsCount") != null ? request.getAttribute("activeJobsCount") : 0 %>+</strong> Active Jobs</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
             <i class="fas fa-building"></i>
-            <span><strong>120+</strong> Companies</span>
+            <span><strong><%= request.getAttribute("employerCount") != null ? request.getAttribute("employerCount") : 0 %>+</strong> Companies</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
             <i class="fas fa-users"></i>
-            <span><strong>3000+</strong> Job Seekers</span>
+            <span><strong><%= request.getAttribute("seekerCount") != null ? request.getAttribute("seekerCount") : 0 %>+</strong> Job Seekers</span>
           </div>
         </div>
       </div>

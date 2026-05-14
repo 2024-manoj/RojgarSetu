@@ -71,6 +71,16 @@ public class StatsDao {
         return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ? AND status = 'pending'", employerId);
     }
 
+    // ===== APPLICATION STATS =====
+
+    public long getTotalApplications() {
+        return countQuery("SELECT COUNT(*) AS total FROM applications");
+    }
+
+    public long getHiredCount() {
+        return countQuery("SELECT COUNT(*) AS total FROM applications WHERE status = 'hired'");
+    }
+
     // ===== HELPERS =====
 
     private long countQuery(String sql) {

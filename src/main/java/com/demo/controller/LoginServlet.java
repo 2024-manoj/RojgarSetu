@@ -21,6 +21,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String email = req.getParameter("email");
         String password = req.getParameter("password");
+        String next = req.getParameter("next");
 
         try (Connection conn = DBConnection.getConnection()) {
             UserDao dao = new UserDao(conn);
@@ -38,7 +39,11 @@ public class LoginServlet extends HttpServlet {
 
 
                 } else if ("SEEKER".equalsIgnoreCase(user.getRole())) {
-                    resp.sendRedirect(req.getContextPath() + "/seeker");
+                    if ("browse".equalsIgnoreCase(next)) {
+                        resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+                    } else {
+                        resp.sendRedirect(req.getContextPath() + "/seeker");
+                    }
                 } else if ("EMPLOYER".equalsIgnoreCase(user.getRole())) {
                     resp.sendRedirect(req.getContextPath() + "/employer");
                 } else {

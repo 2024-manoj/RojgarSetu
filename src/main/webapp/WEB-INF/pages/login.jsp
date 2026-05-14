@@ -51,6 +51,7 @@
 
         <!-- Login Form -->
         <form action="${pageContext.request.contextPath}/login" method="post" class="auth-form">
+            <input type="hidden" name="next" value="<%= request.getParameter("next") != null ? request.getParameter("next") : "" %>"/>
 
             <!-- Email -->
             <div class="form-group">

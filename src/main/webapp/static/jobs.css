@@ -71,6 +71,19 @@
     font-family: inherit;
 }
 
+.jobs-district-select {
+    min-width: 180px;
+    border: none;
+    border-left: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-family: inherit;
+    font-size: 0.9rem;
+    padding: 0 16px;
+    outline: none;
+    cursor: pointer;
+}
+
 .search-bar .search-btn {
     background-color: var(--primary-blue);
     color: var(--white);
@@ -165,6 +178,7 @@
     gap: 8px;
     transition: all 0.2s;
     margin-top: 16px;
+    text-decoration: none;
 }
 
 .reset-filters-btn:hover {
@@ -258,6 +272,39 @@
     color: var(--accent-orange);
 }
 
+.job-description {
+    color: #6b7280;
+    font-size: 0.86rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.job-meta-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.job-meta-row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #4b5563;
+    background: #f8fafb;
+    border: 1px solid #edf0f3;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.job-meta-row i {
+    color: var(--primary-blue);
+    font-size: 0.72rem;
+}
+
 .apply-btn {
     background-color: var(--primary-blue);
     color: var(--white);
@@ -337,6 +384,71 @@
 .page-num:hover:not(.active) {
     border-color: var(--primary-blue);
     color: var(--primary-blue);
+}
+
+.filter-submit-btn {
+    width: 100%;
+    justify-content: center;
+    border-radius: 8px;
+    margin-top: 4px;
+}
+
+.jobs-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(239, 68, 68, 0.08);
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.jobs-empty-state {
+    text-align: center;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 54px 24px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.jobs-empty-state i {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--primary-blue);
+    background: rgba(26, 60, 110, 0.08);
+    font-size: 1.45rem;
+}
+
+.jobs-empty-state h3 {
+    color: #111827;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.jobs-empty-state p {
+    color: #6b7280;
+    font-size: 0.88rem;
+    margin-bottom: 16px;
+}
+
+.jobs-empty-state a {
+    display: inline-flex;
+    color: #fff;
+    background: var(--primary-blue);
+    border-radius: 9px;
+    padding: 9px 16px;
+    text-decoration: none;
+    font-size: 0.84rem;
+    font-weight: 700;
 }
 /* ===== APPLICATION MODAL - ENHANCED STYLES ===== */
 .modal {
@@ -557,6 +669,18 @@
 
 /* Responsive */
 @media (max-width: 480px) {
+    .search-bar {
+        border-radius: 18px;
+        flex-direction: column;
+    }
+
+    .jobs-district-select {
+        width: 100%;
+        min-height: 44px;
+        border-left: 0;
+        border-top: 1px solid #e5e7eb;
+    }
+
     .modal-header {
         padding: 18px 20px;
     }
