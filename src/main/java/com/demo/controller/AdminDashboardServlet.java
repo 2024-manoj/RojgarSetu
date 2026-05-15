@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.controller.util.AdminAuth;
+import com.demo.filter.AdminAuth;
 import com.demo.dao.JobDao;
 import com.demo.dao.StatsDao;
 import com.demo.dao.UserDao;

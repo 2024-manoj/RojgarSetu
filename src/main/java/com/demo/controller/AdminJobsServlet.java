@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.controller.util.AdminAuth;
+import com.demo.filter.AdminAuth;
 import com.demo.dao.JobDao;
 import com.demo.utils.DBConnection;
 import jakarta.servlet.ServletException;

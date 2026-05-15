@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.controller.util.EmployerAuth;
+import com.demo.filter.EmployerAuth;
 import com.demo.dao.ApplicationDao;
 import com.demo.dao.EmployerDao;
 import com.demo.dao.JobDao;

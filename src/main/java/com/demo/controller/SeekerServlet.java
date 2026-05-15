@@ -1,6 +1,6 @@
 package com.demo.controller;
 
-import com.demo.controller.util.SeekerAuth;
+import com.demo.filter.SeekerAuth;
 import com.demo.dao.ApplicationDao;
 import com.demo.dao.JobDao;
 import com.demo.dao.SeekerDao;
