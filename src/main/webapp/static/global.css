@@ -641,3 +641,79 @@ nav {
     }
 }
 
+
+/* ============================================================
+   RESUME VIEW & DOWNLOAD BUTTONS (shared across all roles)
+   ============================================================ */
+.resume-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.resume-view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    font-family: inherit;
+}
+
+.resume-view-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.1);
+}
+
+.resume-view-btn i {
+    font-size: 0.65rem;
+}
+
+.resume-download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1A3C6E;
+    background: rgba(26, 60, 110, 0.06);
+    border: 1px solid rgba(26, 60, 110, 0.12);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    font-family: inherit;
+}
+
+.resume-download-btn:hover {
+    background: rgba(26, 60, 110, 0.1);
+    border-color: rgba(26, 60, 110, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(26, 60, 110, 0.1);
+}
+
+.resume-download-btn i {
+    font-size: 0.65rem;
+}
+
+.no-resume {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+
+.resume-file-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}

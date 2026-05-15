@@ -4,6 +4,7 @@
     - cardJob (com.demo.models.Job)
     - cardIdx (int) - index for gradient cycling
     - cardDateFmt (SimpleDateFormat)
+    - savedJobIds (Set<Integer>) - IDs of saved jobs
   All logic handled via scriptlet — no JavaScript.
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -22,6 +23,10 @@
     com.demo.models.Job cardJob = (com.demo.models.Job) request.getAttribute("cardJob");
     int cardIdx = (Integer) request.getAttribute("cardIdx");
     java.text.SimpleDateFormat cardDateFmt = (java.text.SimpleDateFormat) request.getAttribute("cardDateFmt");
+
+    // Check if this job is saved
+    java.util.Set<Integer> savedJobIds = (java.util.Set<Integer>) request.getAttribute("savedJobIds");
+    boolean isSaved = (savedJobIds != null && savedJobIds.contains(cardJob.getJobId()));
 
     String cGradient = cardGradients[cardIdx % cardGradients.length];
     String cIconColor = cardIconColors[cardIdx % cardIconColors.length];
@@ -61,9 +66,14 @@
             <h3 class="browse-card-title"><%= cTitle %></h3>
             <span class="browse-card-category"><%= cCategory %></span>
         </div>
-        <span class="browse-type-badge <%= cTypeClass %>">
-            <i class="<%= cTypeIcon %>"></i> <%= cJobType %>
-        </span>
+
+        <%-- Heart save button (AJAX powered) --%>
+        <button type="button" class="save-heart-btn <%= isSaved ? "saved" : "" %>"
+                data-job-id="<%= cardJob.getJobId() %>"
+                title="<%= isSaved ? "Remove from saved" : "Save this job" %>"
+                onclick="toggleSaveJob(this)">
+            <i class="<%= isSaved ? "fa-solid" : "fa-regular" %> fa-heart"></i>
+        </button>
     </div>
 
     <%-- Card Body --%>
@@ -99,6 +109,9 @@
             <% } %>
         </div>
         <div class="browse-card-actions">
+            <span class="browse-type-badge <%= cTypeClass %>">
+                <i class="<%= cTypeIcon %>"></i> <%= cJobType %>
+            </span>
             <button type="button" class="browse-detail-btn" onclick="showJobDetail(<%= cardJob.getJobId() %>)">
                 <i class="fa-solid fa-eye"></i> View
             </button>

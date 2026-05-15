@@ -97,10 +97,34 @@
 
 .employer-header-bar .logout-btn:active { transform: translateY(0); }
 
+/* Role Badge */
+.employer-header-bar .role-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+.employer-header-bar .employer-role-tag {
+    color: #60a5fa;
+    background: rgba(96, 165, 250, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
+.employer-header-bar .employer-role-tag i {
+    font-size: 0.7rem;
+}
+
 @media (max-width: 640px) {
     .employer-header-bar { padding: 0 16px; }
     .employer-header-bar .employer-name span { display: none; }
     .employer-header-bar .employer-company-badge { display: none; }
+    .employer-header-bar .role-badge span { display: none; }
+    .employer-header-bar .role-badge { padding: 5px 8px; }
     .employer-header-bar .logout-btn span { display: none; }
     .employer-header-bar .logout-btn { padding: 8px 10px; }
 }

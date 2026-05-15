@@ -4,6 +4,7 @@
     com.demo.models.User su = (com.demo.models.User) request.getAttribute("seekerUser");
     Long openJobs = (Long) request.getAttribute("openJobsCount");
     Long appCount = (Long) request.getAttribute("applicationCount");
+    Long savedCount = (Long) request.getAttribute("savedJobsCount");
 
     String todayDate = new SimpleDateFormat("EEEE, MMMM d, yyyy", Locale.ENGLISH).format(new Date());
 
@@ -71,6 +72,15 @@
                 </div>
                 <p class="stat-number"><%= appCount != null ? appCount : 0 %></p>
                 <span class="stat-sub"><i class="fas fa-check-circle"></i> Jobs you applied to</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-card-top">
+                    <h3>Saved Jobs</h3>
+                    <div class="stat-icon red"><i class="fas fa-heart"></i></div>
+                </div>
+                <p class="stat-number"><%= savedCount != null ? savedCount : 0 %></p>
+                <span class="stat-sub"><i class="fas fa-bookmark"></i> Jobs bookmarked for later</span>
             </div>
 
         </div>

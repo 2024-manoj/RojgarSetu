@@ -3,6 +3,7 @@ package com.demo.controller;
 import com.demo.filter.SeekerAuth;
 import com.demo.dao.ApplicationDao;
 import com.demo.dao.JobDao;
+import com.demo.models.Job;
 import com.demo.dao.SeekerDao;
 import com.demo.dao.StatsDao;
 import com.demo.dao.UserDao;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @WebServlet("/seeker")
@@ -104,6 +106,9 @@ public class SeekerServlet extends HttpServlet {
             // Application count for this seeker
             req.setAttribute("applicationCount", appDao.getApplicationCountBySeeker(userId));
 
+            // Saved jobs count
+            req.setAttribute("savedJobsCount", seekerDao.getSavedJobCount(userId));
+
             if (seekerUser != null && seekerUser.getDob() != null) {
                 req.setAttribute("dobString", new SimpleDateFormat("yyyy-MM-dd").format(seekerUser.getDob()));
             }
@@ -156,19 +161,30 @@ public class SeekerServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/seeker/applications.jsp").forward(req, resp);
     }
 
-    /** Saved Jobs page (placeholder for now) */
+    /** Saved Jobs page — shows jobs saved by this seeker */
     private void handleSavedPage(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws ServletException, IOException {
+        try (Connection conn = DBConnection.getConnection()) {
+            SeekerDao seekerDao = new SeekerDao(conn);
+            List<Job> savedJobs = seekerDao.getSavedJobs(userId);
+            req.setAttribute("savedJobs", savedJobs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("error", "Could not load saved jobs.");
+        }
         req.getRequestDispatcher("/WEB-INF/seeker/saved.jsp").forward(req, resp);
     }
 
-    /** Browse Jobs page — shows all approved jobs */
+    /** Browse Jobs page — shows all approved jobs with saved state */
     private void handleBrowsePage(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
             JobDao jobDao = new JobDao(conn);
+            SeekerDao seekerDao = new SeekerDao(conn);
             List<Job> jobs = jobDao.getApprovedJobs();
+            Set<Integer> savedJobIds = seekerDao.getSavedJobIds(userId);
             req.setAttribute("jobs", jobs);
+            req.setAttribute("savedJobIds", savedJobIds);
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Could not load jobs.");
@@ -194,6 +210,12 @@ public class SeekerServlet extends HttpServlet {
         // Handle apply action
         if ("apply".equals(action)) {
             handleApply(req, resp, session, userId);
+            return;
+        }
+
+        // Handle save/unsave job
+        if ("saveJob".equals(action) || "unsaveJob".equals(action)) {
+            handleSaveToggle(req, resp, session, userId, action);
             return;
         }
 
@@ -250,6 +272,56 @@ public class SeekerServlet extends HttpServlet {
         }
 
         resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+    }
+
+    /** Save or unsave a job */
+    private void handleSaveToggle(HttpServletRequest req, HttpServletResponse resp,
+                                  HttpSession session, int userId, String action) throws IOException {
+        String jobIdStr = req.getParameter("jobId");
+        String from = req.getParameter("from"); // "browse" or "saved"
+        boolean isAjax = "true".equals(req.getParameter("ajax"));
+
+        if (jobIdStr == null || jobIdStr.isBlank()) {
+            if (isAjax) {
+                resp.setContentType("text/plain");
+                resp.getWriter().write("error");
+                return;
+            }
+            session.setAttribute("seekerFlashError", "Invalid job.");
+            resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+            return;
+        }
+
+        try (Connection conn = DBConnection.getConnection()) {
+            SeekerDao seekerDao = new SeekerDao(conn);
+            int jobId = Integer.parseInt(jobIdStr.trim());
+
+            if ("saveJob".equals(action)) {
+                seekerDao.saveJob(userId, jobId);
+            } else {
+                seekerDao.unsaveJob(userId, jobId);
+            }
+
+            if (isAjax) {
+                resp.setContentType("text/plain");
+                resp.getWriter().write("ok");
+                return;
+            }
+
+            session.setAttribute("seekerFlashSuccess",
+                "saveJob".equals(action) ? "Job saved!" : "Job removed from saved.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (isAjax) {
+                resp.setContentType("text/plain");
+                resp.getWriter().write("error");
+                return;
+            }
+            session.setAttribute("seekerFlashError", "Could not update saved jobs.");
+        }
+
+        String redirectPage = "saved".equals(from) ? "saved" : "browse";
+        resp.sendRedirect(req.getContextPath() + "/seeker?page=" + redirectPage);
     }
 
     /** Update seeker profile */

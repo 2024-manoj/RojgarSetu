@@ -128,10 +128,18 @@
                             </label>
                             <input id="resumeFile" name="resumeFile" type="file" accept="application/pdf,.pdf"/>
                             <% if (sp != null && sp.getResumePath() != null && !sp.getResumePath().isBlank()) { %>
-                                <p class="seeker-upload-note">
+                                <div class="seeker-upload-note resume-file-info">
+                                    <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i>
                                     Current resume saved.
-                                    <a href="<%= request.getContextPath() + sp.getResumePath() %>" target="_blank">View PDF</a>
-                                </p>
+                                    <div class="resume-actions" style="margin-top:6px;">
+                                        <a class="resume-view-btn" href="<%= request.getContextPath() %>/resume?file=<%= sp.getResumePath() %>" target="_blank">
+                                            <i class="fa-solid fa-eye"></i> View PDF
+                                        </a>
+                                        <a class="resume-download-btn" href="<%= request.getContextPath() %>/resume?file=<%= sp.getResumePath() %>&download=true">
+                                            <i class="fa-solid fa-download"></i> Download
+                                        </a>
+                                    </div>
+                                </div>
                             <% } else { %>
                                 <p class="seeker-upload-note">Choose a PDF from your computer. Maximum size: 5 MB.</p>
                             <% } %>

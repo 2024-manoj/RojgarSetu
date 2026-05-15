@@ -26,6 +26,12 @@
             </a>
         </div>
 
+        <!-- Role badge -->
+        <div class="role-badge seeker-role-tag">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Job Seeker</span>
+        </div>
+
         <!-- User badge -->
         <div class="seeker-name">
             <i class="fa-solid fa-user-circle"></i>

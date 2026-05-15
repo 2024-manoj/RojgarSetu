@@ -111,7 +111,65 @@
 
         searchInput.addEventListener('input', applyFilters);
     })();
+
+    /* ===== AJAX Save/Unsave Heart Toggle ===== */
+    function toggleSaveJob(btn) {
+        var jobId = btn.getAttribute('data-job-id');
+        var isSaved = btn.classList.contains('saved');
+        var action = isSaved ? 'unsaveJob' : 'saveJob';
+
+        /* Instant visual toggle */
+        btn.classList.toggle('saved');
+        var icon = btn.querySelector('i');
+        if (btn.classList.contains('saved')) {
+            icon.className = 'fa-solid fa-heart';
+            btn.title = 'Remove from saved';
+        } else {
+            icon.className = 'fa-regular fa-heart';
+            btn.title = 'Save this job';
+        }
+
+        /* Send to server in background */
+        var formData = new FormData();
+        formData.append('action', action);
+        formData.append('jobId', jobId);
+        formData.append('from', 'browse');
+        formData.append('ajax', 'true');
+
+        fetch('<%= request.getContextPath() %>/seeker', {
+            method: 'POST',
+            body: formData
+        }).then(function(resp) {
+            return resp.text();
+        }).then(function(text) {
+            /* Show toast */
+            showSaveToast(action === 'saveJob' ? 'Job saved!' : 'Job removed from saved.');
+        }).catch(function() {
+            /* Revert on error */
+            btn.classList.toggle('saved');
+            icon.className = btn.classList.contains('saved') ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            showSaveToast('Could not update. Try again.');
+        });
+    }
+
+    /* Toast notification */
+    function showSaveToast(msg) {
+        var existing = document.querySelector('.save-toast');
+        if (existing) existing.remove();
+
+        var toast = document.createElement('div');
+        toast.className = 'save-toast';
+        toast.innerHTML = '<i class="fa-solid fa-heart"></i> ' + msg;
+        document.body.appendChild(toast);
+
+        setTimeout(function() { toast.classList.add('show'); }, 10);
+        setTimeout(function() {
+            toast.classList.remove('show');
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 2000);
+    }
 </script>
 
 </body>
 </html>
+

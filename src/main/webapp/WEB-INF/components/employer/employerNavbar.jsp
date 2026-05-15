@@ -38,6 +38,12 @@
         </div>
         <% } %>
 
+        <!-- Role badge -->
+        <div class="role-badge employer-role-tag">
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Employer</span>
+        </div>
+
         <!-- User badge -->
         <div class="employer-name">
             <i class="fa-solid fa-user-tie"></i>

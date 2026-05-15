@@ -50,11 +50,16 @@
                             <td><%= cl.isEmpty() ? "-" : cl %></td>
                             <td>
                                 <% if (app.getResumePath() != null && !app.getResumePath().isBlank()) { %>
-                                    <a class="muted-btn" href="<%= request.getContextPath() + app.getResumePath() %>" target="_blank">
-                                        <i class="fa-solid fa-file-pdf"></i> View
-                                    </a>
+                                    <div class="resume-actions">
+                                        <a class="resume-view-btn" href="<%= request.getContextPath() %>/resume?file=<%= app.getResumePath() %>" target="_blank" title="View PDF">
+                                            <i class="fa-solid fa-eye"></i> View
+                                        </a>
+                                        <a class="resume-download-btn" href="<%= request.getContextPath() %>/resume?file=<%= app.getResumePath() %>&download=true" title="Download PDF">
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
                                 <% } else { %>
-                                    -
+                                    <span class="no-resume">—</span>
                                 <% } %>
                             </td>
                             <td><span class="status-badge <%= badgeClass %>"><%= st %></span></td>

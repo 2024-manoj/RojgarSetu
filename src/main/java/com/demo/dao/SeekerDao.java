@@ -1,12 +1,17 @@
 package com.demo.dao;
 
+import com.demo.models.Job;
 import com.demo.models.SeekerProfile;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * DAO for seeker_profile table operations.
- * Handles all seeker profile CRUD.
+ * Handles all seeker profile CRUD + saved jobs.
  */
 public class SeekerDao {
     private Connection conn;
@@ -78,5 +83,123 @@ public class SeekerDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    // ===== SAVED JOBS =====
+
+    /** Save a job for a seeker. */
+    public boolean saveJob(int seekerId, int jobId) {
+        try {
+            String sql = "INSERT IGNORE INTO saved_jobs(seeker_id, job_id) VALUES(?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                ps.setInt(2, jobId);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /** Remove a saved job. */
+    public boolean unsaveJob(int seekerId, int jobId) {
+        try {
+            String sql = "DELETE FROM saved_jobs WHERE seeker_id = ? AND job_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                ps.setInt(2, jobId);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /** Check if a job is saved by a seeker. */
+    public boolean isJobSaved(int seekerId, int jobId) {
+        try {
+            String sql = "SELECT 1 FROM saved_jobs WHERE seeker_id = ? AND job_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                ps.setInt(2, jobId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /** Get all saved job IDs for a seeker (for quick lookup on browse page). */
+    public Set<Integer> getSavedJobIds(int seekerId) {
+        Set<Integer> ids = new HashSet<>();
+        try {
+            String sql = "SELECT job_id FROM saved_jobs WHERE seeker_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ids.add(rs.getInt("job_id"));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ids;
+    }
+
+    /** Get all saved jobs for a seeker (full Job objects). */
+    public List<Job> getSavedJobs(int seekerId) {
+        List<Job> jobs = new ArrayList<>();
+        try {
+            String sql = "SELECT j.* FROM saved_jobs s JOIN jobs j ON s.job_id = j.job_id WHERE s.seeker_id = ? ORDER BY s.saved_at DESC";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Job job = new Job();
+                        job.setJobId(rs.getInt("job_id"));
+                        job.setEmployerId(rs.getInt("employer_id"));
+                        job.setTitle(rs.getString("title"));
+                        job.setDescription(rs.getString("description"));
+                        job.setCategory(rs.getString("category"));
+                        job.setLocationCity(rs.getString("location_city"));
+                        job.setSalaryRange(rs.getString("salary_range"));
+                        job.setJobType(rs.getString("job_type"));
+                        job.setPostedAt(rs.getTimestamp("posted_at"));
+                        job.setDeadline(rs.getDate("deadline"));
+                        job.setStatus(rs.getString("status"));
+                        job.setApprovedAt(rs.getTimestamp("approved_at"));
+                        int approvedBy = rs.getInt("approved_by");
+                        job.setApprovedBy(rs.wasNull() ? null : approvedBy);
+                        jobs.add(job);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jobs;
+    }
+
+    /** Count saved jobs for a seeker. */
+    public long getSavedJobCount(int seekerId) {
+        try {
+            String sql = "SELECT COUNT(*) AS total FROM saved_jobs WHERE seeker_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, seekerId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) return rs.getLong("total");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
