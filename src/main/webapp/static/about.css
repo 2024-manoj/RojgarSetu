@@ -1,5 +1,10 @@
+/* ===== ABOUT PAGE — PREMIUM DESIGN ===== */
+
 .about-section {
-    background-color: var(--main-bg);
+    background:
+        radial-gradient(ellipse 70% 50% at 20% 30%, rgba(26, 60, 110, 0.05), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 70%, rgba(244, 166, 35, 0.04), transparent),
+        var(--main-bg);
     padding: 60px 20px;
     min-height: calc(100vh - 64px);
 }
@@ -9,10 +14,11 @@
     margin: 0 auto;
 }
 
-/* Header */
+/* ── Header ── */
 .about-header {
     text-align: center;
     margin-bottom: 48px;
+    animation: fadeInUp 0.6s ease-out both;
 }
 
 .about-title {
@@ -23,25 +29,32 @@
 }
 
 .about-highlight {
-    color: var(--primary-blue);
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 800;
 }
 
 .about-divider {
     width: 80px;
     height: 4px;
-    background-color: var(--accent-orange);
+    background: linear-gradient(90deg, var(--accent-orange), #f5b84a);
     margin: 0 auto;
     border-radius: 2px;
 }
 
-/* Description */
+/* ── Description ── */
 .about-content {
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius);
     padding: 32px 40px;
     margin-bottom: 40px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: fadeInUp 0.6s ease-out 0.1s both;
 }
 
 .about-description {
@@ -60,39 +73,49 @@
     font-weight: 600;
 }
 
-/* Mission & Vision Cards */
+/* ── Mission & Vision Cards ── */
 .mission-vision {
     display: flex;
     gap: 30px;
     margin-bottom: 60px;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
 }
 
 .mission-card,
 .vision-card {
     flex: 1;
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius);
     padding: 32px 28px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .mission-card:hover,
 .vision-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
 }
 
 .card-icon {
     width: 64px;
     height: 64px;
-    background-color: rgba(26, 60, 110, 0.1);
+    background: linear-gradient(135deg, rgba(26, 60, 110, 0.1), rgba(26, 60, 110, 0.04));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px;
+    transition: transform 0.3s ease;
+}
+
+.mission-card:hover .card-icon,
+.vision-card:hover .card-icon {
+    transform: scale(1.1);
 }
 
 .card-icon i {
@@ -115,9 +138,10 @@
     color: var(--neutral-grey);
 }
 
-/* Team Section with Images */
+/* ── Team Section ── */
 .team-section {
     margin-bottom: 60px;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
 }
 
 .section-title {
@@ -137,16 +161,19 @@
 
 .team-card {
     text-align: center;
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius);
     padding: 24px 20px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .team-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
 }
 
 /* Team Image */
@@ -156,8 +183,15 @@
     margin: 0 auto 16px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid var(--primary-blue);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 3px solid transparent;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, var(--primary-blue), var(--accent-orange)) border-box;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    transition: box-shadow 0.3s ease;
+}
+
+.team-card:hover .team-image {
+    box-shadow: 0 8px 24px rgba(26, 60, 110, 0.18);
 }
 
 .team-image img {
@@ -203,27 +237,58 @@
     border-radius: 50%;
     color: var(--primary-blue);
     font-size: 0.85rem;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     text-decoration: none;
 }
 
 .team-social a:hover {
-    background-color: var(--primary-blue);
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
     color: var(--white);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(26, 60, 110, 0.25);
 }
 
-/* Impact Stats */
+/* ===== IMPACT STATS — PREMIUM ===== */
 .impact-section {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, #152f58 100%);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #152f58 50%, #0f2240 100%);
     border-radius: var(--radius);
-    padding: 48px 32px;
+    padding: 52px 36px;
     margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+/* Decorative glow behind stats */
+.impact-section::before {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(244, 166, 35, 0.12), transparent 70%);
+    top: -80px;
+    right: -60px;
+    pointer-events: none;
+}
+
+.impact-section::after {
+    content: "";
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent 70%);
+    bottom: -60px;
+    left: -40px;
+    pointer-events: none;
 }
 
 .impact-section .section-title {
     color: var(--white);
-    margin-bottom: 32px;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
 }
 
 .stats-grid {
@@ -232,37 +297,79 @@
     gap: 20px;
     flex-wrap: wrap;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .stat-card {
     flex: 1;
     min-width: 140px;
+    padding: 20px 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.14);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* Stat icon circle */
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: rgba(244, 166, 35, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.12);
+}
+
+.stat-icon i {
+    font-size: 1.15rem;
+    color: var(--accent-orange);
 }
 
 .stat-number {
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     font-weight: 800;
     color: var(--accent-orange);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    line-height: 1.1;
 }
 
 .stat-label {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
 }
 
-/* Contact Info */
+/* ── Contact Info ── */
 .contact-info {
     display: flex;
     justify-content: center;
     gap: 40px;
     flex-wrap: wrap;
-    background-color: var(--white);
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-radius: var(--radius);
     padding: 24px 32px;
     text-align: center;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    animation: fadeInUp 0.6s ease-out 0.5s both;
 }
 
 .contact-info p {
@@ -288,7 +395,19 @@
     opacity: 0.75;
 }
 
-/* Responsive */
+/* ── Fade-in animation ── */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .mission-vision {
         flex-direction: column;
@@ -297,7 +416,11 @@
 
     .stats-grid {
         flex-direction: column;
-        gap: 24px;
+        gap: 16px;
+    }
+
+    .stat-card {
+        padding: 18px 14px;
     }
 
     .about-content {
@@ -351,5 +474,9 @@
         width: 28px;
         height: 28px;
         font-size: 0.75rem;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
     }
 }

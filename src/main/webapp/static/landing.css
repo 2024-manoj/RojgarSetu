@@ -1,6 +1,88 @@
-/* ===== LANDING PAGE POLISH ===== */
+/* ===== LANDING PAGE — PREMIUM POLISH ===== */
+
+/* ── Animated gradient bg for hero ── */
+.hero {
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(26, 60, 110, 0.06), transparent),
+        radial-gradient(ellipse 70% 50% at 80% 60%, rgba(244, 166, 35, 0.06), transparent),
+        linear-gradient(168deg, #ffffff 0%, #f8faff 50%, #f0f4fb 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* subtle floating shapes behind hero */
+.hero::before,
+.hero::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.45;
+    animation: floatBlob 18s ease-in-out infinite alternate;
+}
+
+.hero::before {
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(26, 60, 110, 0.08), transparent 70%);
+    top: -80px;
+    left: -120px;
+}
+
+.hero::after {
+    width: 340px;
+    height: 340px;
+    background: radial-gradient(circle, rgba(244, 166, 35, 0.10), transparent 70%);
+    bottom: -60px;
+    right: -80px;
+    animation-delay: -9s;
+}
+
+@keyframes floatBlob {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(30px, -20px) scale(1.08); }
+}
+
+/* ── Hero Title enhancement ── */
+.hero-title {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-highlight {
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Search Bar — Glassmorphism ── */
 .hero-search {
     text-decoration: none;
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(26, 60, 110, 0.10);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+        0 8px 32px rgba(26, 60, 110, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.hero-search:hover,
+.hero-search:focus-within {
+    border-color: rgba(26, 60, 110, 0.18);
+    box-shadow:
+        0 12px 40px rgba(26, 60, 110, 0.12),
+        0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .hero-search .search-input {
@@ -27,13 +109,153 @@
     flex-shrink: 0;
 }
 
+/* Search Button — Gradient */
 .hero-search .search-btn {
     min-height: 44px;
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 14px rgba(26, 60, 110, 0.22);
 }
 
-@media (max-width: 640px) {
-    .hero-search .search-input-wrapper::after {
-        margin-left: auto;
+.hero-search .search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(26, 60, 110, 0.30);
+}
+
+.hero-search .search-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 14px rgba(26, 60, 110, 0.22);
+}
+
+/* ── Quick Stats — Cards feel ── */
+.hero-stats {
+    position: relative;
+    z-index: 1;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(26, 60, 110, 0.07);
+    padding: 10px 18px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(26, 60, 110, 0.10);
+    border-color: rgba(26, 60, 110, 0.14);
+}
+
+.stat-item i {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(26, 60, 110, 0.08);
+    font-size: 0.8rem;
+}
+
+.stat-divider {
+    opacity: 0.4;
+}
+
+/* ── How It Works — Enhanced ── */
+.how-it-works {
+    background:
+        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(26, 60, 110, 0.04), transparent),
+        var(--soft-bg);
+}
+
+.hiw-title {
+    position: relative;
+}
+
+.hiw-title-bold {
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hiw-columns {
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.3s ease;
+}
+
+.hiw-columns:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Step numbers — glow effect */
+.step-number {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hiw-step:hover .step-number {
+    transform: scale(1.12);
+    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.18);
+}
+
+.seeker-num {
+    background: linear-gradient(135deg, #F4A623, #e09200);
+}
+
+.employer-num {
+    background: linear-gradient(135deg, var(--primary-blue), #2a5298);
+}
+
+/* Column header icons — refined */
+.hiw-col-header i {
+    transition: transform 0.3s ease;
+}
+
+.hiw-column:hover .hiw-col-header i {
+    transform: scale(1.1);
+}
+
+/* Step body text — subtle hover */
+.hiw-step {
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background-color 0.25s ease;
+}
+
+.hiw-step:hover {
+    background-color: rgba(26, 60, 110, 0.03);
+}
+
+/* ── Fade-in animation for sections ── */
+.hero-content,
+.hiw-header,
+.hiw-columns {
+    animation: fadeInUp 0.7s ease-out both;
+}
+
+.hiw-header {
+    animation-delay: 0.1s;
+}
+
+.hiw-columns {
+    animation-delay: 0.25s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -41,7 +263,8 @@
 .portal-page {
     min-height: calc(100vh - 64px);
     background:
-        linear-gradient(135deg, rgba(26, 60, 110, 0.08), rgba(244, 166, 35, 0.08)),
+        radial-gradient(ellipse 70% 50% at 30% 20%, rgba(26, 60, 110, 0.06), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 70%, rgba(244, 166, 35, 0.06), transparent),
         #f5f7fb;
     padding: 48px 20px 64px;
 }
@@ -56,7 +279,9 @@
     align-items: center;
     gap: 8px;
     color: #1A3C6E;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(26, 60, 110, 0.1);
     border-radius: 10px;
     padding: 9px 14px;
@@ -124,7 +349,9 @@
     align-items: center;
     gap: 16px;
     padding: 24px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 16px;
     border: 1px solid rgba(17, 24, 39, 0.06);
     box-shadow: 0 1px 10px rgba(0,0,0,0.05);
@@ -148,6 +375,11 @@
     justify-content: center;
     font-size: 1.22rem;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.portal-card:hover .portal-card-icon {
+    transform: scale(1.08);
 }
 
 .seeker-card .portal-card-icon {
@@ -215,17 +447,29 @@
     padding: 10px 18px;
     border-radius: 10px;
     color: #0f2847;
-    background: #F4A623;
+    background: linear-gradient(135deg, #F4A623, #f5b84a);
     font-size: 0.86rem;
     font-weight: 800;
     text-decoration: none;
     white-space: nowrap;
     transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(244, 166, 35, 0.25);
 }
 
 .portal-access-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 22px rgba(244, 166, 35, 0.28);
+    box-shadow: 0 10px 22px rgba(244, 166, 35, 0.35);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+    .hero-search .search-input-wrapper::after {
+        margin-left: auto;
+    }
+
+    .stat-item {
+        padding: 8px 12px;
+    }
 }
 
 @media (max-width: 760px) {

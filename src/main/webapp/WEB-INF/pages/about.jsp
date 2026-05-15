@@ -198,25 +198,35 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
           </div>
         </div>
 
-        <!-- Impact Stats -->
+        <!-- Impact Stats (Dynamic via Scriptlet) -->
+        <%
+          long totalJobs = request.getAttribute("totalJobs") != null ? (long) request.getAttribute("totalJobs") : 0;
+          long totalEmployers = request.getAttribute("totalEmployers") != null ? (long) request.getAttribute("totalEmployers") : 0;
+          long totalSeekers = request.getAttribute("totalSeekers") != null ? (long) request.getAttribute("totalSeekers") : 0;
+          long totalApplications = request.getAttribute("totalApplications") != null ? (long) request.getAttribute("totalApplications") : 0;
+        %>
         <div class="impact-section">
           <h2 class="section-title">Our Impact in Numbers</h2>
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-number">5000+</div>
+              <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+              <div class="stat-number"><%= totalJobs %>+</div>
               <div class="stat-label">Total Jobs</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">750+</div>
+              <div class="stat-icon"><i class="fas fa-building"></i></div>
+              <div class="stat-number"><%= totalEmployers %>+</div>
               <div class="stat-label">Total Employers</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">15000+</div>
+              <div class="stat-icon"><i class="fas fa-users"></i></div>
+              <div class="stat-number"><%= totalSeekers %>+</div>
               <div class="stat-label">Total Job Seekers</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">2000+</div>
-              <div class="stat-label">Jobs Filled</div>
+              <div class="stat-icon"><i class="fas fa-file-signature"></i></div>
+              <div class="stat-number"><%= totalApplications %>+</div>
+              <div class="stat-label">Applications</div>
             </div>
           </div>
         </div>
