@@ -14,6 +14,21 @@ import java.sql.Connection;
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // If user is already logged in, redirect to their dashboard
+        HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("userRole") != null) {
+            String role = String.valueOf(session.getAttribute("userRole"));
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+            } else if ("SEEKER".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/seeker");
+            } else if ("EMPLOYER".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/employer");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/");
+            }
+            return;
+        }
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, resp);
     }
 
@@ -36,7 +51,6 @@ public class LoginServlet extends HttpServlet {
                 if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                     session.setAttribute("adminName",user.getFullName());
                     resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-
 
                 } else if ("SEEKER".equalsIgnoreCase(user.getRole())) {
                     if ("browse".equalsIgnoreCase(next)) {

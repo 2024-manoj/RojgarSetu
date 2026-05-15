@@ -16,6 +16,21 @@ import java.sql.Connection;
 public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // If user is already logged in, redirect to their dashboard
+        jakarta.servlet.http.HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("userRole") != null) {
+            String role = String.valueOf(session.getAttribute("userRole"));
+            if ("ADMIN".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+            } else if ("SEEKER".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/seeker");
+            } else if ("EMPLOYER".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/employer");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/");
+            }
+            return;
+        }
         req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req, resp);
     }
 
