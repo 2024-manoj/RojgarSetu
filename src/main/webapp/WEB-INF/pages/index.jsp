@@ -212,6 +212,145 @@ language="java" %>
       </div>
     </section>
 
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+      <div class="faq-container">
+        <div class="faq-header">
+          <span class="faq-badge"><i class="fas fa-circle-question"></i> Got Questions?</span>
+          <h2 class="faq-title">
+            Frequently Asked <span class="faq-title-highlight">Questions</span>
+          </h2>
+          <p class="faq-subtitle">
+            Everything you need to know about RojgarSetu. Can't find the answer you're looking for? Feel free to
+            <a href="${pageContext.request.contextPath}/contact" class="faq-contact-link">contact us</a>.
+          </p>
+        </div>
+
+        <div class="faq-list">
+          <!-- FAQ Item 1 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">What is RojgarSetu?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>RojgarSetu is Koshi Province's dedicated job portal that bridges the gap between local job seekers and employers. We provide a simple, professional, and effective platform to discover job opportunities and hire talented candidates across all 14 districts of Koshi Province.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 2 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">Is RojgarSetu free to use?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>Yes! Creating a profile, browsing jobs, and applying for positions is completely free for job seekers. Employers can post jobs and review candidates at no cost during our launch period. We believe in making employment accessible to everyone in Koshi Province.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 3 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">How do I create an account?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>Click the <strong>"Get Started"</strong> button on the homepage and choose whether you're a Job Seeker or an Employer. Fill in your basic details like name, email, phone number, and district. Once registered, you can immediately start browsing or posting jobs.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 4 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">Which districts are covered by RojgarSetu?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>RojgarSetu covers all 14 districts of Koshi Province including Sunsari, Morang, Jhapa, Ilam, Taplejung, Panchthar, Terhathum, Dhankuta, Bhojpur, Solukhumbu, Okhaldhunga, Khotang, Udayapur, and Saptari. You can filter jobs by your preferred district for the most relevant results.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 5 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">How can I apply for a job?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>Once you're logged in as a Job Seeker, browse available jobs using the search bar or job listings page. Click on any job to view details, and then click the <strong>"Apply Now"</strong> button. Your profile information is shared with the employer, and you can track your application status from your dashboard.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 6 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">How do employers post a job?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>Employers can log in to their dashboard and click <strong>"Post a Job"</strong>. Fill in the job title, description, category, salary range, required qualifications, and the district. Once submitted, the job goes live and becomes visible to thousands of job seekers across Koshi Province.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 7 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">Can I save jobs and apply later?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>Absolutely! You can save any job by clicking the heart icon on job listings. All your saved jobs are accessible from the <strong>"Saved Jobs"</strong> section in your Seeker dashboard. This way you can bookmark interesting opportunities and apply when you're ready.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ Item 8 -->
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)" aria-expanded="false">
+              <span class="faq-q-text">How do I contact RojgarSetu support?</span>
+              <span class="faq-icon"><i class="fas fa-plus"></i></span>
+            </button>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                <p>You can reach us through our <a href="${pageContext.request.contextPath}/contact">Contact Page</a> by filling out the enquiry form. We are also available via email and phone during business hours. Our team is committed to helping you with any issues or queries within 24 hours.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      function toggleFaq(btn) {
+        var item = btn.closest('.faq-item');
+        var isOpen = item.classList.contains('active');
+        // Close all other items
+        document.querySelectorAll('.faq-item.active').forEach(function(el) {
+          el.classList.remove('active');
+          el.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+        // Toggle current
+        if (!isOpen) {
+          item.classList.add('active');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      }
+    </script>
+
     <%@ include file="/WEB-INF/components/Footer.jsp"%>
   </body>
 </html>
