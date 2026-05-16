@@ -13,8 +13,10 @@ import java.util.List;
  * DAO for core users table operations.
  * Handles: register, login, getUserById, update, delete, list users.
  *
- * Profile-specific ops → SeekerDao / EmployerDao
- * Stats/counts → StatsDao
+ * Profile-specific ops are delegated to SeekerDao / EmployerDao.
+ * Stats/counts are delegated to StatsDao.
+ *
+ * @author Manoj Katuwal
  */
 public class UserDao {
     private Connection conn;
@@ -23,7 +25,7 @@ public class UserDao {
         this.conn = conn;
     }
 
-    // ===== REGISTRATION =====
+
 
     public boolean registerUser(User user, SeekerProfile seekerProfile, EmployerProfile employerProfile) {
         boolean success = false;
@@ -94,7 +96,7 @@ public class UserDao {
         return success;
     }
 
-    // ===== LOGIN =====
+
 
     public User getUserByEmailAndPassword(String email, String password) {
         User user = null;
@@ -117,7 +119,7 @@ public class UserDao {
         return user;
     }
 
-    // ===== SINGLE USER LOOKUP =====
+
 
     public User getUserById(int userId) {
         User user = null;
@@ -152,7 +154,7 @@ public class UserDao {
         return false;
     }
 
-    // ===== USER LISTS =====
+
 
     public List<User> getAllUsers() {
         return getUsersByFilter(null);
@@ -186,7 +188,7 @@ public class UserDao {
         return users;
     }
 
-    // ===== UPDATE / DELETE =====
+
 
     public boolean updateUserProfile(User user) {
         try {
@@ -278,7 +280,7 @@ public class UserDao {
         return false;
     }
 
-    // ===== ROW MAPPER =====
+
 
     private User mapRow(ResultSet rs) throws SQLException {
         User user = new User();

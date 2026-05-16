@@ -12,11 +12,28 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.Connection;
 
+/**
+ * Servlet that handles new user registration.
+ * Displays the registration form on GET and processes form submission on POST.
+ * Creates user accounts with role-specific profiles (Seeker or Employer)
+ * and redirects to the login page on success.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
+
+    /**
+     * Displays the registration page, or redirects already-authenticated
+     * users to their respective dashboard.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // If user is already logged in, redirect to their dashboard
         jakarta.servlet.http.HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("userRole") != null) {
             String role = String.valueOf(session.getAttribute("userRole"));
@@ -34,6 +51,16 @@ public class RegisterServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req, resp);
     }
 
+    /**
+     * Processes the registration form submission.
+     * Creates a new user and the corresponding role-specific profile,
+     * then redirects to login on success or back to register on failure.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {

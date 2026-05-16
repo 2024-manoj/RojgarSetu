@@ -10,6 +10,8 @@ import java.util.List;
 /**
  * DAO for applications table operations.
  * Handles all application CRUD and queries.
+ *
+ * @author Manoj Katuwal
  */
 public class ApplicationDao {
     private Connection conn;
@@ -80,7 +82,8 @@ public class ApplicationDao {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, seekerId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) return rs.getLong("total");
+                    if (rs.next())
+                        return rs.getLong("total");
                 }
             }
         } catch (Exception e) {
@@ -96,7 +99,8 @@ public class ApplicationDao {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, employerId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) return rs.getLong("total");
+                    if (rs.next())
+                        return rs.getLong("total");
                 }
             }
         } catch (Exception e) {
@@ -173,7 +177,8 @@ public class ApplicationDao {
         try {
             DatabaseMetaData meta = conn.getMetaData();
             try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "applications", "resume_path")) {
-                if (rs.next()) return;
+                if (rs.next())
+                    return;
             }
             try (Statement st = conn.createStatement()) {
                 st.executeUpdate("ALTER TABLE applications ADD COLUMN resume_path VARCHAR(500) AFTER cover_letter");

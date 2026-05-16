@@ -23,34 +23,62 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ * Servlet that handles all Employer dashboard operations.
+ * Routes GET requests to dashboard, post-job, my-jobs, applicants,
+ * and profile pages. Processes POST actions for job CRUD,
+ * application status updates, and profile management.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/employer")
 public class EmployerServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!EmployerAuth.requireEmployer(req, resp)) return;
+        if (!EmployerAuth.requireEmployer(req, resp))
+            return;
 
         HttpSession session = req.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
+        if (userId == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
-        // Flash messages
         if (session != null) {
             Object ok = session.getAttribute("employerFlashSuccess");
-            if (ok != null) { req.setAttribute("success", ok); session.removeAttribute("employerFlashSuccess"); }
+            if (ok != null) {
+                req.setAttribute("success", ok);
+                session.removeAttribute("employerFlashSuccess");
+            }
             Object err = session.getAttribute("employerFlashError");
-            if (err != null) { req.setAttribute("error", err); session.removeAttribute("employerFlashError"); }
+            if (err != null) {
+                req.setAttribute("error", err);
+                session.removeAttribute("employerFlashError");
+            }
         }
 
         String page = req.getParameter("page");
-        if (page == null) page = "";
+        if (page == null)
+            page = "";
 
         switch (page) {
-            case "postjob":   handlePostJobPage(req, resp, userId); break;
-            case "myjobs":    handleMyJobsPage(req, resp, userId); break;
-            case "applicants":handleApplicantsPage(req, resp, userId); break;
-            case "profile":   handleProfilePage(req, resp, userId); break;
-            default:          handleDashboardPage(req, resp, userId); break;
+            case "postjob":
+                handlePostJobPage(req, resp, userId);
+                break;
+            case "myjobs":
+                handleMyJobsPage(req, resp, userId);
+                break;
+            case "applicants":
+                handleApplicantsPage(req, resp, userId);
+                break;
+            case "profile":
+                handleProfilePage(req, resp, userId);
+                break;
+            default:
+                handleDashboardPage(req, resp, userId);
+                break;
         }
     }
 
@@ -88,8 +116,11 @@ public class EmployerServlet extends HttpServlet {
             try (Connection conn = DBConnection.getConnection()) {
                 JobDao jobDao = new JobDao(conn);
                 Job job = jobDao.getJobById(Integer.parseInt(editId.trim()));
-                if (job != null && job.getEmployerId() == userId) req.setAttribute("editJob", job);
-            } catch (Exception e) { e.printStackTrace(); }
+                if (job != null && job.getEmployerId() == userId)
+                    req.setAttribute("editJob", job);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         req.getRequestDispatcher("/WEB-INF/employer/postjob.jsp").forward(req, resp);
     }
@@ -139,24 +170,42 @@ public class EmployerServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        if (!EmployerAuth.requireEmployer(req, resp)) return;
+        if (!EmployerAuth.requireEmployer(req, resp))
+            return;
         HttpSession session = req.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
+        if (userId == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
         String action = req.getParameter("action");
-        if ("postjob".equals(action))          { handlePostJob(req, resp, session, userId); return; }
-        if ("updatejob".equals(action))        { handleUpdateJob(req, resp, session, userId); return; }
-        if ("deletejob".equals(action))        { handleDeleteJob(req, resp, session, userId); return; }
-        if ("updateapplication".equals(action)) { handleUpdateApplication(req, resp, session, userId); return; }
+        if ("postjob".equals(action)) {
+            handlePostJob(req, resp, session, userId);
+            return;
+        }
+        if ("updatejob".equals(action)) {
+            handleUpdateJob(req, resp, session, userId);
+            return;
+        }
+        if ("deletejob".equals(action)) {
+            handleDeleteJob(req, resp, session, userId);
+            return;
+        }
+        if ("updateapplication".equals(action)) {
+            handleUpdateApplication(req, resp, session, userId);
+            return;
+        }
         handleProfileUpdate(req, resp, session, userId);
     }
 
-    private void handlePostJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId) throws IOException {
+    private void handlePostJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+            throws IOException {
         String title = req.getParameter("title");
         if (title == null || title.isBlank()) {
             session.setAttribute("employerFlashError", "Job title is required.");
-            resp.sendRedirect(req.getContextPath() + "/employer?page=postjob"); return;
+            resp.sendRedirect(req.getContextPath() + "/employer?page=postjob");
+            return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             JobDao jobDao = new JobDao(conn);
@@ -170,7 +219,8 @@ public class EmployerServlet extends HttpServlet {
             job.setJobType(paramOr(req, "jobType", "Full-time"));
             job.setDeadline(parseDate(req.getParameter("deadline"), 30));
             if (jobDao.createJob(job)) {
-                session.setAttribute("employerFlashSuccess", "Job posted successfully! It will be visible after admin approval.");
+                session.setAttribute("employerFlashSuccess",
+                        "Job posted successfully! It will be visible after admin approval.");
             } else {
                 session.setAttribute("employerFlashError", "Could not post the job. Try again.");
             }
@@ -181,11 +231,13 @@ public class EmployerServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleUpdateJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId) throws IOException {
+    private void handleUpdateJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+            throws IOException {
         String jobIdStr = req.getParameter("jobId");
         if (jobIdStr == null || jobIdStr.isBlank()) {
             session.setAttribute("employerFlashError", "Invalid job.");
-            resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs"); return;
+            resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
+            return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             JobDao jobDao = new JobDao(conn);
@@ -199,7 +251,12 @@ public class EmployerServlet extends HttpServlet {
             job.setSalaryRange(param(req, "salaryRange"));
             job.setJobType(paramOr(req, "jobType", "Full-time"));
             String dl = req.getParameter("deadline");
-            if (dl != null && !dl.isBlank()) { try { job.setDeadline(java.sql.Date.valueOf(dl.trim())); } catch (Exception ignored) {} }
+            if (dl != null && !dl.isBlank()) {
+                try {
+                    job.setDeadline(java.sql.Date.valueOf(dl.trim()));
+                } catch (Exception ignored) {
+                }
+            }
             if (jobDao.updateJob(job)) {
                 session.setAttribute("employerFlashSuccess", "Job updated successfully!");
             } else {
@@ -212,11 +269,13 @@ public class EmployerServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleDeleteJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId) throws IOException {
+    private void handleDeleteJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+            throws IOException {
         String jobIdStr = req.getParameter("jobId");
         if (jobIdStr == null || jobIdStr.isBlank()) {
             session.setAttribute("employerFlashError", "Invalid job.");
-            resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs"); return;
+            resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
+            return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             JobDao jobDao = new JobDao(conn);
@@ -232,12 +291,14 @@ public class EmployerServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleUpdateApplication(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId) throws IOException {
+    private void handleUpdateApplication(HttpServletRequest req, HttpServletResponse resp, HttpSession session,
+            int userId) throws IOException {
         String appIdStr = req.getParameter("appId");
         String status = req.getParameter("status");
         if (appIdStr == null || appIdStr.isBlank() || status == null || status.isBlank()) {
             session.setAttribute("employerFlashError", "Invalid request.");
-            resp.sendRedirect(req.getContextPath() + "/employer?page=applicants"); return;
+            resp.sendRedirect(req.getContextPath() + "/employer?page=applicants");
+            return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             ApplicationDao appDao = new ApplicationDao(conn);
@@ -253,11 +314,13 @@ public class EmployerServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/employer?page=applicants");
     }
 
-    private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId) throws IOException {
+    private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+            throws IOException {
         String fullName = req.getParameter("fullName");
         if (fullName == null || fullName.isBlank()) {
             session.setAttribute("employerFlashError", "Full name is required.");
-            resp.sendRedirect(req.getContextPath() + "/employer?page=profile"); return;
+            resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
+            return;
         }
         User user = new User();
         user.setId(userId);
@@ -266,7 +329,10 @@ public class EmployerServlet extends HttpServlet {
         user.setLocation(param(req, "location"));
         String dobStr = req.getParameter("dob");
         if (dobStr != null && !dobStr.isBlank()) {
-            try { user.setDob(new SimpleDateFormat("yyyy-MM-dd").parse(dobStr)); } catch (Exception ignored) {}
+            try {
+                user.setDob(new SimpleDateFormat("yyyy-MM-dd").parse(dobStr));
+            } catch (Exception ignored) {
+            }
         }
 
         try (Connection conn = DBConnection.getConnection()) {
@@ -275,16 +341,19 @@ public class EmployerServlet extends HttpServlet {
 
             if (!userDao.updateUserProfile(user)) {
                 session.setAttribute("employerFlashError", "Could not update account profile.");
-                resp.sendRedirect(req.getContextPath() + "/employer?page=profile"); return;
+                resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
+                return;
             }
             if (!employerDao.insertEmployerProfileIfMissing(userId)) {
                 session.setAttribute("employerFlashError", "Could not prepare employer profile.");
-                resp.sendRedirect(req.getContextPath() + "/employer?page=profile"); return;
+                resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
+                return;
             }
             EmployerProfile profile = employerDao.getEmployerProfile(userId);
             if (profile == null) {
                 session.setAttribute("employerFlashError", "Employer profile not found.");
-                resp.sendRedirect(req.getContextPath() + "/employer?page=profile"); return;
+                resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
+                return;
             }
             profile.setUserId(userId);
             profile.setCompanyName(param(req, "companyName"));
@@ -296,7 +365,8 @@ public class EmployerServlet extends HttpServlet {
 
             if (employerDao.updateEmployerProfile(profile)) {
                 User refreshed = userDao.getUserById(userId);
-                if (refreshed != null) session.setAttribute("user", refreshed);
+                if (refreshed != null)
+                    session.setAttribute("user", refreshed);
                 session.setAttribute("employerFlashSuccess", "Profile saved.");
             } else {
                 session.setAttribute("employerFlashError", "Could not update employer details.");
@@ -308,18 +378,22 @@ public class EmployerServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
     }
 
-    // ===== HELPERS =====
     private String param(HttpServletRequest req, String name) {
         String v = req.getParameter(name);
         return v != null ? v.trim() : "";
     }
+
     private String paramOr(HttpServletRequest req, String name, String def) {
         String v = req.getParameter(name);
         return v != null && !v.isBlank() ? v.trim() : def;
     }
+
     private java.sql.Date parseDate(String s, int defaultDays) {
         if (s != null && !s.isBlank()) {
-            try { return java.sql.Date.valueOf(s.trim()); } catch (Exception ignored) {}
+            try {
+                return java.sql.Date.valueOf(s.trim());
+            } catch (Exception ignored) {
+            }
         }
         return new java.sql.Date(System.currentTimeMillis() + (long) defaultDays * 24 * 60 * 60 * 1000);
     }

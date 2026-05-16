@@ -13,9 +13,24 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 
+/**
+ * Servlet that handles the Admin employers management page.
+ * Lists all employers on GET and processes approve, reject, and delete
+ * actions on POST for employer account management.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/employers")
 public class AdminEmployersServlet extends HttpServlet {
 
+    /**
+     * Loads all employer users and renders the admin employers page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -31,6 +46,13 @@ public class AdminEmployersServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/admin/employers.jsp").forward(req, resp);
     }
 
+    /**
+     * Processes admin actions on employer accounts (approve, reject, delete).
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws IOException if the redirect fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {

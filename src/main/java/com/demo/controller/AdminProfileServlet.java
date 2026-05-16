@@ -15,9 +15,24 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 
+/**
+ * Servlet that handles the Admin profile page.
+ * Displays the admin's personal information on GET and processes
+ * profile update form submissions on POST.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/profile")
 public class AdminProfileServlet extends HttpServlet {
 
+    /**
+     * Loads the admin user's profile and renders the profile page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -55,6 +70,13 @@ public class AdminProfileServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/admin/profile.jsp").forward(req, resp);
     }
 
+    /**
+     * Processes the admin profile update form submission.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws IOException if the redirect fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {

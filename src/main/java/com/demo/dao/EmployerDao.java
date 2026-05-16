@@ -7,6 +7,8 @@ import java.sql.*;
 /**
  * DAO for employer_profile table operations.
  * Handles all employer profile CRUD.
+ *
+ * @author Manoj Katuwal
  */
 public class EmployerDao {
     private Connection conn;

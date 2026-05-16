@@ -13,20 +13,26 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Serves resume PDF files for view (inline) or download (attachment).
+ * Servlet that serves resume PDF files for inline viewing or download.
+ * Only authenticated users can access resume files. Files are restricted
+ * to the /uploads/resumes/ directory for security.
  *
- * Usage:
- *   View:     /resume?file=/uploads/resumes/xyz.pdf
- *   Download: /resume?file=/uploads/resumes/xyz.pdf&download=true
- *
- * Security: only authenticated users can access resume files.
+ * @author Manoj Katuwal
  */
 @WebServlet("/resume")
 public class ResumeServlet extends HttpServlet {
 
+    /**
+     * Streams the requested resume PDF file to the client.
+     * Supports both inline viewing and attachment download modes.
+     *
+     * @param req  the HTTP request (expects "file" and optional "download" params)
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Auth check — only logged-in users
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Please login to view resumes.");
@@ -39,13 +45,11 @@ public class ResumeServlet extends HttpServlet {
             return;
         }
 
-        // Security: only allow files from /uploads/resumes/ path
         if (!filePath.startsWith("/uploads/resumes/") || filePath.contains("..")) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied.");
             return;
         }
 
-        // Resolve real path on disk
         String realPath = getServletContext().getRealPath(filePath);
         if (realPath == null) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found.");
@@ -58,20 +62,17 @@ public class ResumeServlet extends HttpServlet {
             return;
         }
 
-        // Determine disposition: inline (view) or attachment (download)
         boolean isDownload = "true".equals(req.getParameter("download"));
         String disposition = isDownload ? "attachment" : "inline";
 
-        // Extract a clean filename
         String fileName = file.getName();
 
         resp.setContentType("application/pdf");
         resp.setHeader("Content-Disposition", disposition + "; filename=\"" + fileName + "\"");
         resp.setContentLengthLong(file.length());
 
-        // Stream the file
         try (FileInputStream fis = new FileInputStream(file);
-             OutputStream os = resp.getOutputStream()) {
+                OutputStream os = resp.getOutputStream()) {
             byte[] buffer = new byte[4096];
             int bytesRead;
             while ((bytesRead = fis.read(buffer)) != -1) {

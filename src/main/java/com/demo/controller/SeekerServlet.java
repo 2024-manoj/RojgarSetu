@@ -29,12 +29,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * Servlet that handles all Seeker dashboard operations.
+ * Routes GET requests to dashboard, profile, applications, saved jobs,
+ * and browse pages. Processes POST actions for job applications,
+ * save/unsave toggles, and profile updates with resume upload.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/seeker")
-@MultipartConfig(
-        fileSizeThreshold = 1024 * 1024,
-        maxFileSize = 5 * 1024 * 1024,
-        maxRequestSize = 8 * 1024 * 1024
-)
+@MultipartConfig(fileSizeThreshold = 1024 * 1024, maxFileSize = 5 * 1024 * 1024, maxRequestSize = 8 * 1024 * 1024)
 public class SeekerServlet extends HttpServlet {
 
     @Override
@@ -50,7 +54,6 @@ public class SeekerServlet extends HttpServlet {
             return;
         }
 
-        // Flash messages
         if (session != null) {
             Object ok = session.getAttribute("seekerFlashSuccess");
             if (ok != null) {
@@ -64,9 +67,9 @@ public class SeekerServlet extends HttpServlet {
             }
         }
 
-        // Route based on ?page= parameter
         String page = req.getParameter("page");
-        if (page == null) page = "";
+        if (page == null)
+            page = "";
 
         switch (page) {
             case "profile":
@@ -103,10 +106,8 @@ public class SeekerServlet extends HttpServlet {
             req.setAttribute("seekerProfile", seekerProfile);
             req.setAttribute("openJobsCount", statsDao.getApprovedJobCount());
 
-            // Application count for this seeker
             req.setAttribute("applicationCount", appDao.getApplicationCountBySeeker(userId));
 
-            // Saved jobs count
             req.setAttribute("savedJobsCount", seekerDao.getSavedJobCount(userId));
 
             if (seekerUser != null && seekerUser.getDob() != null) {
@@ -207,25 +208,22 @@ public class SeekerServlet extends HttpServlet {
 
         String action = req.getParameter("action");
 
-        // Handle apply action
         if ("apply".equals(action)) {
             handleApply(req, resp, session, userId);
             return;
         }
 
-        // Handle save/unsave job
         if ("saveJob".equals(action) || "unsaveJob".equals(action)) {
             handleSaveToggle(req, resp, session, userId, action);
             return;
         }
 
-        // Default: profile update
         handleProfileUpdate(req, resp, session, userId);
     }
 
     /** Apply to a job */
     private void handleApply(HttpServletRequest req, HttpServletResponse resp,
-                             HttpSession session, int userId) throws IOException, ServletException {
+            HttpSession session, int userId) throws IOException, ServletException {
         String jobIdStr = req.getParameter("jobId");
         String coverLetter = req.getParameter("coverLetter");
         String resumePath = null;
@@ -241,7 +239,6 @@ public class SeekerServlet extends HttpServlet {
             SeekerDao seekerDao = new SeekerDao(conn);
             int jobId = Integer.parseInt(jobIdStr.trim());
 
-            // Check if already applied
             if (appDao.hasApplied(userId, jobId)) {
                 session.setAttribute("seekerFlashError", "You have already applied to this job.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
@@ -276,9 +273,9 @@ public class SeekerServlet extends HttpServlet {
 
     /** Save or unsave a job */
     private void handleSaveToggle(HttpServletRequest req, HttpServletResponse resp,
-                                  HttpSession session, int userId, String action) throws IOException {
+            HttpSession session, int userId, String action) throws IOException {
         String jobIdStr = req.getParameter("jobId");
-        String from = req.getParameter("from"); // "browse" or "saved"
+        String from = req.getParameter("from");
         boolean isAjax = "true".equals(req.getParameter("ajax"));
 
         if (jobIdStr == null || jobIdStr.isBlank()) {
@@ -309,7 +306,7 @@ public class SeekerServlet extends HttpServlet {
             }
 
             session.setAttribute("seekerFlashSuccess",
-                "saveJob".equals(action) ? "Job saved!" : "Job removed from saved.");
+                    "saveJob".equals(action) ? "Job saved!" : "Job removed from saved.");
         } catch (Exception e) {
             e.printStackTrace();
             if (isAjax) {
@@ -326,7 +323,7 @@ public class SeekerServlet extends HttpServlet {
 
     /** Update seeker profile */
     private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp,
-                                     HttpSession session, int userId) throws IOException, ServletException {
+            HttpSession session, int userId) throws IOException, ServletException {
         String fullName = req.getParameter("fullName");
         String phone = req.getParameter("phone");
         String location = req.getParameter("location");

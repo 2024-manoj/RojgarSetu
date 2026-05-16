@@ -8,8 +8,10 @@ import java.util.*;
  * DAO for core jobs table operations.
  * Handles: CRUD, filtering, approval workflow.
  *
- * Application ops → ApplicationDao
- * Stats/counts → StatsDao
+ * Application ops are delegated to ApplicationDao.
+ * Stats/counts are delegated to StatsDao.
+ *
+ * @author Manoj Katuwal
  */
 public class JobDao {
     private Connection conn;
@@ -17,8 +19,6 @@ public class JobDao {
     public JobDao(Connection conn) {
         this.conn = conn;
     }
-
-    // ===== CREATE =====
 
     public boolean createJob(Job job) {
         try {
@@ -40,8 +40,6 @@ public class JobDao {
         }
         return false;
     }
-
-    // ===== READ =====
 
     public Job getJobById(int jobId) {
         Job job = null;
@@ -75,10 +73,14 @@ public class JobDao {
         try {
             String sql = "SELECT DISTINCT category FROM jobs WHERE status = 'approved' AND category IS NOT NULL AND TRIM(category) != '' ORDER BY category";
             try (PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) { cats.add(rs.getString("category")); }
+                    ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cats.add(rs.getString("category"));
+                }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return cats;
     }
 
@@ -88,10 +90,14 @@ public class JobDao {
         try {
             String sql = "SELECT DISTINCT location_city FROM jobs WHERE status = 'approved' AND location_city IS NOT NULL AND TRIM(location_city) != '' ORDER BY location_city";
             try (PreparedStatement ps = conn.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) { locs.add(rs.getString("location_city")); }
+                    ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    locs.add(rs.getString("location_city"));
+                }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return locs;
     }
 
@@ -223,8 +229,6 @@ public class JobDao {
         return jobs;
     }
 
-    // ===== UPDATE =====
-
     public boolean updateJob(Job job) {
         try {
             String sql = "UPDATE jobs SET title=?, description=?, category=?, location_city=?, salary_range=?, job_type=?, deadline=? WHERE job_id=? AND employer_id=?";
@@ -260,8 +264,6 @@ public class JobDao {
         return false;
     }
 
-    // ===== APPROVAL WORKFLOW =====
-
     public boolean approveJob(int jobId, int adminId) {
         try {
             String sql = "UPDATE jobs SET status = 'approved', approved_at = NOW(), approved_by = ? WHERE job_id = ? AND LOWER(TRIM(status)) = 'pending'";
@@ -288,8 +290,6 @@ public class JobDao {
         }
         return false;
     }
-
-    // ===== DELETE =====
 
     public boolean deleteJob(int jobId) {
         try {
@@ -318,12 +318,10 @@ public class JobDao {
         return false;
     }
 
-    // ===== HELPERS =====
-
     private List<Job> queryJobs(String sql) {
         List<Job> jobs = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 jobs.add(mapRow(rs));
             }
@@ -350,7 +348,8 @@ public class JobDao {
 
         sql.append(" AND LOWER(").append(column).append(") IN (");
         for (int i = 0; i < cleanValues.size(); i++) {
-            if (i > 0) sql.append(",");
+            if (i > 0)
+                sql.append(",");
             sql.append("?");
             params.add(cleanValues.get(i));
         }

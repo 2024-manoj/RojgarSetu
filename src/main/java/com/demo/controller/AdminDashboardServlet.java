@@ -16,9 +16,24 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
+/**
+ * Servlet that handles the Admin dashboard page.
+ * Loads platform-wide statistics, pending job listings, and recent users
+ * for display on the admin overview panel.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/dashboard")
 public class AdminDashboardServlet extends HttpServlet {
 
+    /**
+     * Loads all dashboard data and renders the admin dashboard view.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -40,7 +55,6 @@ public class AdminDashboardServlet extends HttpServlet {
             List<Job> pendingJobs = jobDao.getRecentPendingJobs(20);
             req.setAttribute("jobs", pendingJobs);
 
-            // Recent users for dashboard
             java.util.List<com.demo.models.User> allUsers = userDao.getAllUsers();
             java.util.List<com.demo.models.User> recentUsers = allUsers.size() > 5 ? allUsers.subList(0, 5) : allUsers;
             req.setAttribute("recentUsers", recentUsers);

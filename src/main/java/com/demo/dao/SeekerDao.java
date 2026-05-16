@@ -11,7 +11,9 @@ import java.util.Set;
 
 /**
  * DAO for seeker_profile table operations.
- * Handles all seeker profile CRUD + saved jobs.
+ * Handles all seeker profile CRUD and saved jobs management.
+ *
+ * @author Manoj Katuwal
  */
 public class SeekerDao {
     private Connection conn;
@@ -46,7 +48,9 @@ public class SeekerDao {
         return profile;
     }
 
-    /** Creates a bare seeker_profile row when missing (legacy / edge-case users). */
+    /**
+     * Creates a bare seeker_profile row when missing (legacy / edge-case users).
+     */
     public boolean insertSeekerProfileIfMissing(int userId) {
         if (getSeekerProfile(userId) != null) {
             return true;
@@ -84,8 +88,6 @@ public class SeekerDao {
         }
         return false;
     }
-
-    // ===== SAVED JOBS =====
 
     /** Save a job for a seeker. */
     public boolean saveJob(int seekerId, int jobId) {
@@ -194,7 +196,8 @@ public class SeekerDao {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setInt(1, seekerId);
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) return rs.getLong("total");
+                    if (rs.next())
+                        return rs.getLong("total");
                 }
             }
         } catch (Exception e) {

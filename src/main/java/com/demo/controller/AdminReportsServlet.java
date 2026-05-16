@@ -19,9 +19,25 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.List;
 
+/**
+ * Servlet that handles the Admin reports page and CSV export downloads.
+ * Displays aggregate platform statistics on GET and streams downloadable
+ * CSV reports for users and jobs when the "download" parameter is provided.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/reports")
 public class AdminReportsServlet extends HttpServlet {
 
+    /**
+     * Renders the reports overview page or streams a CSV download
+     * based on the "download" query parameter.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -51,12 +67,18 @@ public class AdminReportsServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/admin/reports.jsp").forward(req, resp);
     }
 
+    /**
+     * Streams the users report as a CSV file download.
+     *
+     * @param resp the HTTP response
+     * @throws IOException if an I/O error occurs
+     */
     private void streamUsersCsv(HttpServletResponse resp) throws IOException {
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("text/csv; charset=UTF-8");
         resp.setHeader("Content-Disposition", "attachment; filename=\"users-report.csv\"");
         try (Connection conn = DBConnection.getConnection();
-             PrintWriter out = resp.getWriter()) {
+                PrintWriter out = resp.getWriter()) {
             UserDao dao = new UserDao(conn);
             out.println("id,full_name,email,role,status,location,created_at");
             List<User> users = dao.getAllUsers();
@@ -76,12 +98,18 @@ public class AdminReportsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Streams the jobs report as a CSV file download.
+     *
+     * @param resp the HTTP response
+     * @throws IOException if an I/O error occurs
+     */
     private void streamJobsCsv(HttpServletResponse resp) throws IOException {
         resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
         resp.setContentType("text/csv; charset=UTF-8");
         resp.setHeader("Content-Disposition", "attachment; filename=\"jobs-report.csv\"");
         try (Connection conn = DBConnection.getConnection();
-             PrintWriter out = resp.getWriter()) {
+                PrintWriter out = resp.getWriter()) {
             JobDao dao = new JobDao(conn);
             out.println("job_id,employer_id,title,category,location_city,status,posted_at,deadline");
             List<Job> jobs = dao.getAllJobs();
@@ -102,6 +130,12 @@ public class AdminReportsServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Escapes double quotes in CSV field values.
+     *
+     * @param s the string to escape
+     * @return the escaped string, or empty string if null
+     */
     private static String csvEscape(String s) {
         if (s == null) {
             return "";

@@ -11,8 +11,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 
+/**
+ * Servlet that handles requests for the About Us page.
+ * Loads platform-wide statistics (total jobs, employers, seekers,
+ * applications) and forwards to the about.jsp view.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/about")
 public class AboutServlet extends HttpServlet {
+
+    /**
+     * Loads platform statistics and renders the About Us page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {

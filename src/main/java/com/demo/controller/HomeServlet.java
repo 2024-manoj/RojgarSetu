@@ -13,20 +13,34 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
 
+/**
+ * Servlet that handles requests for the landing/home page.
+ * Loads hero section statistics and dynamic category/location
+ * data for the search dropdowns, then forwards to index.jsp.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
+
+    /**
+     * Loads platform statistics and job metadata, then renders the home page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try (Connection conn = DBConnection.getConnection()) {
             StatsDao statsDao = new StatsDao(conn);
             JobDao jobDao = new JobDao(conn);
 
-            // Hero stats
             req.setAttribute("activeJobsCount", statsDao.getApprovedJobCount());
             req.setAttribute("employerCount", statsDao.getTotalEmployers());
             req.setAttribute("seekerCount", statsDao.getTotalSeekers());
 
-            // Dynamic categories & locations for search dropdown
             List<String> categories = jobDao.getDistinctCategories();
             List<String> locations = jobDao.getDistinctLocations();
             req.setAttribute("categories", categories);

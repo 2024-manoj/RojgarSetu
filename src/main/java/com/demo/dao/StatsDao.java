@@ -3,8 +3,10 @@ package com.demo.dao;
 import java.sql.*;
 
 /**
- * DAO for aggregate statistics / counts.
- * Used primarily by admin dashboard and reports.
+ * DAO for aggregate statistics and counts.
+ * Used primarily by admin dashboard and reports pages.
+ *
+ * @author Manoj Katuwal
  */
 public class StatsDao {
     private Connection conn;
@@ -12,8 +14,6 @@ public class StatsDao {
     public StatsDao(Connection conn) {
         this.conn = conn;
     }
-
-    // ===== USER STATS =====
 
     public long getTotalUsers() {
         return countQuery("SELECT COUNT(*) AS total FROM users");
@@ -39,8 +39,6 @@ public class StatsDao {
         return countQuery("SELECT COUNT(*) AS total FROM users WHERE status = 'REJECTED'");
     }
 
-    // ===== JOB STATS =====
-
     public long getTotalJobs() {
         return countQuery("SELECT COUNT(*) AS total FROM jobs");
     }
@@ -57,21 +55,19 @@ public class StatsDao {
         return countQuery("SELECT COUNT(*) AS total FROM jobs WHERE status = 'expired'");
     }
 
-    // ===== EMPLOYER-SPECIFIC STATS =====
-
     public long getJobCountByEmployer(int employerId) {
         return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ?", employerId);
     }
 
     public long getActiveJobCountByEmployer(int employerId) {
-        return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ? AND status = 'approved'", employerId);
+        return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ? AND status = 'approved'",
+                employerId);
     }
 
     public long getPendingJobCountByEmployer(int employerId) {
-        return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ? AND status = 'pending'", employerId);
+        return countQueryParam("SELECT COUNT(*) AS total FROM jobs WHERE employer_id = ? AND status = 'pending'",
+                employerId);
     }
-
-    // ===== APPLICATION STATS =====
 
     public long getTotalApplications() {
         return countQuery("SELECT COUNT(*) AS total FROM applications");
@@ -81,12 +77,11 @@ public class StatsDao {
         return countQuery("SELECT COUNT(*) AS total FROM applications WHERE status = 'hired'");
     }
 
-    // ===== HELPERS =====
-
     private long countQuery(String sql) {
         try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getLong("total");
+                ResultSet rs = ps.executeQuery()) {
+            if (rs.next())
+                return rs.getLong("total");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,7 +92,8 @@ public class StatsDao {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, param);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) return rs.getLong("total");
+                if (rs.next())
+                    return rs.getLong("total");
             }
         } catch (Exception e) {
             e.printStackTrace();

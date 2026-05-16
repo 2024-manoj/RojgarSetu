@@ -13,9 +13,24 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 
+/**
+ * Servlet that handles the Admin seekers management page.
+ * Lists all seekers on GET and processes approve, reject, and delete
+ * actions on POST for seeker account management.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/seekers")
 public class AdminSeekersServlet extends HttpServlet {
 
+    /**
+     * Loads all seeker users and renders the admin seekers page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -25,6 +40,13 @@ public class AdminSeekersServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/admin/seekers.jsp").forward(req, resp);
     }
 
+    /**
+     * Processes admin actions on seeker accounts (approve, reject, delete).
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws IOException if the redirect fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -64,6 +86,11 @@ public class AdminSeekersServlet extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/admin/seekers");
     }
 
+    /**
+     * Helper method to load the seekers list into request attributes.
+     *
+     * @param req the HTTP request
+     */
     private void loadList(HttpServletRequest req) {
         try (Connection conn = DBConnection.getConnection()) {
             UserDao dao = new UserDao(conn);

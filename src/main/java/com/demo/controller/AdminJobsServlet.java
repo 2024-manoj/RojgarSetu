@@ -13,9 +13,24 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 
+/**
+ * Servlet that handles the Admin jobs management page.
+ * Lists all jobs on GET and processes approve, reject, and delete
+ * actions on POST for the job approval workflow.
+ *
+ * @author Manoj Katuwal
+ */
 @WebServlet("/admin/jobs")
 public class AdminJobsServlet extends HttpServlet {
 
+    /**
+     * Loads all jobs and renders the admin jobs management page.
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws ServletException if a servlet error occurs
+     * @throws IOException      if an I/O error occurs
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
@@ -31,6 +46,13 @@ public class AdminJobsServlet extends HttpServlet {
         req.getRequestDispatcher("/WEB-INF/admin/jobs.jsp").forward(req, resp);
     }
 
+    /**
+     * Processes admin job actions (approve, reject, delete).
+     *
+     * @param req  the HTTP request
+     * @param resp the HTTP response
+     * @throws IOException if the redirect fails
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         if (!AdminAuth.requireAdmin(req, resp)) {
