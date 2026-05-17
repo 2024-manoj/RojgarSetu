@@ -114,7 +114,7 @@
           </div>
           <div class="info-text">
             <h4>Phone:</h4>
-            <p>+977-1234567890</p>
+            <p>+977 9804064003</p>
           </div>
         </div>
 
@@ -124,7 +124,7 @@
           </div>
           <div class="info-text">
             <h4>Email:</h4>
-            <p><a href="mailto:example@rojgarsetu.com">example@rojgarsetu.com</a></p>
+            <p><a href="mailto:example@rojgarsetu.com">katwalmanoj67@gmail.com</a></p>
           </div>
         </div>
 
@@ -132,10 +132,10 @@
         <div class="social-links">
           <h4>Follow Us</h4>
           <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook-f"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://twitter.com/rojgarsetu"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://www.instagram.com/rojgarsetu"><i class="fab fa-instagram"></i></a>
           </div>
         </div>
       </div>

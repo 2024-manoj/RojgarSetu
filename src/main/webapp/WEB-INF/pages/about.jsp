@@ -99,7 +99,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             <div class="team-card">
               <div class="team-image">
                 <img
-                  src="${pageContext.request.contextPath}/assets/team/img.png"
+                  src="${pageContext.request.contextPath}/assets/team/aayush.jpeg"
                   alt="Aayush Chaudhari"
                   onerror="
                     this.src =
@@ -110,9 +110,9 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
               <h4>Aayush Chaudhari</h4>
               <p class="team-role">Founder & CEO</p>
               <div class="team-social">
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook"></i></a>
+                <a href="https://github.com/2024-manoj"><i class="fab fa-github"></i></a>
               </div>
             </div>
 
@@ -120,7 +120,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             <div class="team-card">
               <div class="team-image">
                 <img
-                  src="${pageContext.request.contextPath}/assets/team/img.png"
+                  src="${pageContext.request.contextPath}/assets/team/manoj.jpeg"
                   alt="Manoj Katuwal"
                   onerror="
                     this.src =
@@ -131,9 +131,9 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
               <h4>Manoj Katuwal</h4>
               <p class="team-role">Head of Operations</p>
               <div class="team-social">
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook"></i></a>
+                <a href="https://github.com/2024-manoj"><i class="fab fa-github"></i></a>
               </div>
             </div>
 
@@ -141,16 +141,16 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             <div class="team-card">
               <div class="team-image">
                 <img
-                  src="${pageContext.request.contextPath}/assets/team/img.png"
+                  src="${pageContext.request.contextPath}/assets/team/img.jpg"
                   alt="Kristina Gurung"
                 />
               </div>
               <h4>Kristina Gurung</h4>
               <p class="team-role">Lead Developer</p>
               <div class="team-social">
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook"></i></a>
+                <a href="https://github.com/2024-manoj"><i class="fab fa-github"></i></a>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             <div class="team-card">
               <div class="team-image">
                 <img
-                  src="${pageContext.request.contextPath}/assets/team/img.png"
+                  src="${pageContext.request.contextPath}/assets/team/img.jpg"
                   alt="Khusi Limbu"
                   onerror="
                     this.src =
@@ -169,9 +169,9 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
               <h4>Khusi Limbu</h4>
               <p class="team-role">HR Specialist</p>
               <div class="team-social">
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook"></i></a>
+                <a href="https://github.com/2024-manoj"><i class="fab fa-github"></i></a>
               </div>
             </div>
 
@@ -179,7 +179,7 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
             <div class="team-card">
               <div class="team-image">
                 <img
-                  src="${pageContext.request.contextPath}/assets/team/img.png"
+                  src="${pageContext.request.contextPath}/assets/team/img.jpg"
                   alt="Biman Limbu"
                   onerror="
                     this.src =
@@ -190,9 +190,9 @@ language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
               <h4>Biman Limbu</h4>
               <p class="team-role">Customer Success Lead</p>
               <div class="team-social">
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manoj-katuwal-2636a239a/"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/share/p/18pz9v9QJE/"><i class="fab fa-facebook"></i></a>
+                <a href="https://github.com/2024-manoj"><i class="fab fa-github"></i></a>
               </div>
             </div>
           </div>
