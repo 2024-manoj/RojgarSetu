@@ -5,9 +5,12 @@ import com.demo.models.EmployerProfile;
 import com.demo.models.SeekerProfile;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -34,20 +37,7 @@ public class RegisterServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        jakarta.servlet.http.HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("userRole") != null) {
-            String role = String.valueOf(session.getAttribute("userRole"));
-            if ("ADMIN".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-            } else if ("SEEKER".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/seeker");
-            } else if ("EMPLOYER".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/employer");
-            } else {
-                resp.sendRedirect(req.getContextPath() + "/");
-            }
-            return;
-        }
+        if (SessionUtils.redirectIfLoggedIn(req, resp)) return;
         req.getRequestDispatcher("/WEB-INF/pages/register.jsp").forward(req, resp);
     }
 
@@ -97,12 +87,11 @@ public class RegisterServlet extends HttpServlet {
             UserDao dao = new UserDao(conn);
             boolean result = dao.registerUser(user, seeker, employer);
 
-            HttpSession session = req.getSession();
             if (result) {
-                session.setAttribute("success", "Registration Successful! Please login.");
+                SessionUtils.setFlashSuccess(req, "success", "Registration Successful! Please login.");
                 resp.sendRedirect(req.getContextPath() + "/login");
             } else {
-                session.setAttribute("error", "Registration Failed!");
+                SessionUtils.setFlashError(req, "error", "Registration Failed!");
                 resp.sendRedirect(req.getContextPath() + "/register");
             }
         } catch (Exception e) {

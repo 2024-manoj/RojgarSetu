@@ -2,10 +2,14 @@ package com.demo.controller;
 
 import com.demo.dao.UserDao;
 import com.demo.models.User;
+import com.demo.utils.CookieUtils;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,20 +36,14 @@ public class LoginServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("userRole") != null) {
-            String role = String.valueOf(session.getAttribute("userRole"));
-            if ("ADMIN".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-            } else if ("SEEKER".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/seeker");
-            } else if ("EMPLOYER".equalsIgnoreCase(role)) {
-                resp.sendRedirect(req.getContextPath() + "/employer");
-            } else {
-                resp.sendRedirect(req.getContextPath() + "/");
-            }
-            return;
+        if (SessionUtils.redirectIfLoggedIn(req, resp)) return;
+
+        // Pre-fill email from "Remember Me" cookie
+        String rememberedEmail = CookieUtils.getCookieValue(req, "rememberEmail");
+        if (rememberedEmail != null) {
+            req.setAttribute("rememberedEmail", rememberedEmail);
         }
+
         req.getRequestDispatcher("/WEB-INF/pages/login.jsp").forward(req, resp);
     }
 
@@ -70,25 +68,20 @@ public class LoginServlet extends HttpServlet {
             User user = dao.getUserByEmailAndPassword(email, password);
 
             if (user != null) {
-                HttpSession session = req.getSession();
-                session.setAttribute("user", user);
-                session.setAttribute("userId", user.getId());
-                session.setAttribute("userRole", user.getRole());
+                SessionUtils.createLoginSession(req, user);
 
-                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-                    session.setAttribute("adminName",user.getFullName());
-                    resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
-
-                } else if ("SEEKER".equalsIgnoreCase(user.getRole())) {
-                    if ("browse".equalsIgnoreCase(next)) {
-                        resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
-                    } else {
-                        resp.sendRedirect(req.getContextPath() + "/seeker");
-                    }
-                } else if ("EMPLOYER".equalsIgnoreCase(user.getRole())) {
-                    resp.sendRedirect(req.getContextPath() + "/employer");
+                // Handle "Remember Me" cookie
+                String remember = req.getParameter("remember");
+                if ("on".equals(remember) || "true".equals(remember)) {
+                    CookieUtils.addCookie(resp, "rememberEmail", email, 30 * 24 * 60 * 60); // 30 days
                 } else {
-                    resp.sendRedirect(req.getContextPath() + "/");
+                    CookieUtils.deleteCookie(resp, "rememberEmail");
+                }
+
+                if ("SEEKER".equalsIgnoreCase(user.getRole()) && "browse".equalsIgnoreCase(next)) {
+                    resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
+                } else {
+                    SessionUtils.redirectToDashboard(req, resp, user.getRole());
                 }
             } else {
                 req.setAttribute("error", "Invalid email or password!");

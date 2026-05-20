@@ -12,13 +12,13 @@ import com.demo.models.Job;
 import com.demo.models.SeekerProfile;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
 
 import java.io.File;
@@ -47,25 +47,10 @@ public class SeekerServlet extends HttpServlet {
             return;
         }
 
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
 
-        if (session != null) {
-            Object ok = session.getAttribute("seekerFlashSuccess");
-            if (ok != null) {
-                req.setAttribute("success", ok);
-                session.removeAttribute("seekerFlashSuccess");
-            }
-            Object err = session.getAttribute("seekerFlashError");
-            if (err != null) {
-                req.setAttribute("error", err);
-                session.removeAttribute("seekerFlashError");
-            }
-        }
+        SessionUtils.consumeFlash(req, "seekerFlashSuccess", "seekerFlashError");
 
         String page = req.getParameter("page");
         if (page == null)
@@ -199,37 +184,33 @@ public class SeekerServlet extends HttpServlet {
         if (!SeekerAuth.requireSeeker(req, resp)) {
             return;
         }
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
 
         String action = req.getParameter("action");
 
         if ("apply".equals(action)) {
-            handleApply(req, resp, session, userId);
+            handleApply(req, resp, userId);
             return;
         }
 
         if ("saveJob".equals(action) || "unsaveJob".equals(action)) {
-            handleSaveToggle(req, resp, session, userId, action);
+            handleSaveToggle(req, resp, userId, action);
             return;
         }
 
-        handleProfileUpdate(req, resp, session, userId);
+        handleProfileUpdate(req, resp, userId);
     }
 
     /** Apply to a job */
     private void handleApply(HttpServletRequest req, HttpServletResponse resp,
-            HttpSession session, int userId) throws IOException, ServletException {
+            int userId) throws IOException, ServletException {
         String jobIdStr = req.getParameter("jobId");
         String coverLetter = req.getParameter("coverLetter");
         String resumePath = null;
 
         if (jobIdStr == null || jobIdStr.isBlank()) {
-            session.setAttribute("seekerFlashError", "Invalid job.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "Invalid job.");
             resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
             return;
         }
@@ -240,7 +221,7 @@ public class SeekerServlet extends HttpServlet {
             int jobId = Integer.parseInt(jobIdStr.trim());
 
             if (appDao.hasApplied(userId, jobId)) {
-                session.setAttribute("seekerFlashError", "You have already applied to this job.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "You have already applied to this job.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
                 return;
             }
@@ -259,13 +240,13 @@ public class SeekerServlet extends HttpServlet {
             app.setStatus("pending");
 
             if (appDao.createApplication(app)) {
-                session.setAttribute("seekerFlashSuccess", "Applied successfully!");
+                SessionUtils.setFlashSuccess(req, "seekerFlashSuccess", "Applied successfully!");
             } else {
-                session.setAttribute("seekerFlashError", "Could not apply. Try again.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "Could not apply. Try again.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("seekerFlashError", "Error applying to job.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "Error applying to job.");
         }
 
         resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
@@ -273,7 +254,7 @@ public class SeekerServlet extends HttpServlet {
 
     /** Save or unsave a job */
     private void handleSaveToggle(HttpServletRequest req, HttpServletResponse resp,
-            HttpSession session, int userId, String action) throws IOException {
+            int userId, String action) throws IOException {
         String jobIdStr = req.getParameter("jobId");
         String from = req.getParameter("from");
         boolean isAjax = "true".equals(req.getParameter("ajax"));
@@ -284,7 +265,7 @@ public class SeekerServlet extends HttpServlet {
                 resp.getWriter().write("error");
                 return;
             }
-            session.setAttribute("seekerFlashError", "Invalid job.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "Invalid job.");
             resp.sendRedirect(req.getContextPath() + "/seeker?page=browse");
             return;
         }
@@ -305,7 +286,7 @@ public class SeekerServlet extends HttpServlet {
                 return;
             }
 
-            session.setAttribute("seekerFlashSuccess",
+            SessionUtils.setFlashSuccess(req, "seekerFlashSuccess",
                     "saveJob".equals(action) ? "Job saved!" : "Job removed from saved.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -314,7 +295,7 @@ public class SeekerServlet extends HttpServlet {
                 resp.getWriter().write("error");
                 return;
             }
-            session.setAttribute("seekerFlashError", "Could not update saved jobs.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "Could not update saved jobs.");
         }
 
         String redirectPage = "saved".equals(from) ? "saved" : "browse";
@@ -323,7 +304,7 @@ public class SeekerServlet extends HttpServlet {
 
     /** Update seeker profile */
     private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp,
-            HttpSession session, int userId) throws IOException, ServletException {
+            int userId) throws IOException, ServletException {
         String fullName = req.getParameter("fullName");
         String phone = req.getParameter("phone");
         String location = req.getParameter("location");
@@ -335,7 +316,7 @@ public class SeekerServlet extends HttpServlet {
         String uploadedResumePath = null;
 
         if (fullName == null || fullName.isBlank()) {
-            session.setAttribute("seekerFlashError", "Full name is required.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "Full name is required.");
             resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
             return;
         }
@@ -361,18 +342,18 @@ public class SeekerServlet extends HttpServlet {
                 user.setDob(existingUser.getDob());
             }
             if (!userDao.updateUserProfile(user)) {
-                session.setAttribute("seekerFlashError", "Could not update account profile.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "Could not update account profile.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
             if (!seekerDao.insertSeekerProfileIfMissing(userId)) {
-                session.setAttribute("seekerFlashError", "Could not prepare seeker profile.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "Could not prepare seeker profile.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
             SeekerProfile profile = seekerDao.getSeekerProfile(userId);
             if (profile == null) {
-                session.setAttribute("seekerFlashError", "Seeker profile not found.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "Seeker profile not found.");
                 resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
                 return;
             }
@@ -405,15 +386,15 @@ public class SeekerServlet extends HttpServlet {
             if (seekerDao.updateSeekerProfile(profile)) {
                 User refreshed = userDao.getUserById(userId);
                 if (refreshed != null) {
-                    session.setAttribute("user", refreshed);
+                    SessionUtils.updateSessionUser(req, refreshed);
                 }
-                session.setAttribute("seekerFlashSuccess", "Profile saved.");
+                SessionUtils.setFlashSuccess(req, "seekerFlashSuccess", "Profile saved.");
             } else {
-                session.setAttribute("seekerFlashError", "Could not update seeker details.");
+                SessionUtils.setFlashError(req, "seekerFlashError", "Could not update seeker details.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("seekerFlashError", "An error occurred while saving.");
+            SessionUtils.setFlashError(req, "seekerFlashError", "An error occurred while saving.");
         }
         resp.sendRedirect(req.getContextPath() + "/seeker?page=profile");
     }

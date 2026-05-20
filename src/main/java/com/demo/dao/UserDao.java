@@ -3,7 +3,7 @@ package com.demo.dao;
 import com.demo.models.EmployerProfile;
 import com.demo.models.SeekerProfile;
 import com.demo.models.User;
-import org.mindrot.jbcrypt.BCrypt;
+import com.demo.utils.PasswordUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -37,8 +37,7 @@ public class UserDao {
                 ps.setString(1, user.getFullName());
                 ps.setString(2, user.getEmail());
 
-                String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-                ps.setString(3, hashedPassword);
+                ps.setString(3, PasswordUtils.hashPassword(user.getPassword()));
                 ps.setString(4, user.getRole());
                 ps.setString(5, "PENDING");
                 ps.setString(6, user.getLocation());
@@ -107,7 +106,7 @@ public class UserDao {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         String hashedPassword = rs.getString("password");
-                        if (hashedPassword != null && BCrypt.checkpw(password, hashedPassword)) {
+                        if (PasswordUtils.checkPassword(password, hashedPassword)) {
                             user = mapRow(rs);
                         }
                     }

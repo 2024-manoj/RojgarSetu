@@ -11,12 +11,12 @@ import com.demo.models.EmployerProfile;
 import com.demo.models.Job;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -39,25 +39,10 @@ public class EmployerServlet extends HttpServlet {
         if (!EmployerAuth.requireEmployer(req, resp))
             return;
 
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
 
-        if (session != null) {
-            Object ok = session.getAttribute("employerFlashSuccess");
-            if (ok != null) {
-                req.setAttribute("success", ok);
-                session.removeAttribute("employerFlashSuccess");
-            }
-            Object err = session.getAttribute("employerFlashError");
-            if (err != null) {
-                req.setAttribute("error", err);
-                session.removeAttribute("employerFlashError");
-            }
-        }
+        SessionUtils.consumeFlash(req, "employerFlashSuccess", "employerFlashError");
 
         String page = req.getParameter("page");
         if (page == null)
@@ -172,38 +157,34 @@ public class EmployerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         if (!EmployerAuth.requireEmployer(req, resp))
             return;
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
 
         String action = req.getParameter("action");
         if ("postjob".equals(action)) {
-            handlePostJob(req, resp, session, userId);
+            handlePostJob(req, resp, userId);
             return;
         }
         if ("updatejob".equals(action)) {
-            handleUpdateJob(req, resp, session, userId);
+            handleUpdateJob(req, resp, userId);
             return;
         }
         if ("deletejob".equals(action)) {
-            handleDeleteJob(req, resp, session, userId);
+            handleDeleteJob(req, resp, userId);
             return;
         }
         if ("updateapplication".equals(action)) {
-            handleUpdateApplication(req, resp, session, userId);
+            handleUpdateApplication(req, resp, userId);
             return;
         }
-        handleProfileUpdate(req, resp, session, userId);
+        handleProfileUpdate(req, resp, userId);
     }
 
-    private void handlePostJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+    private void handlePostJob(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws IOException {
         String title = req.getParameter("title");
         if (title == null || title.isBlank()) {
-            session.setAttribute("employerFlashError", "Job title is required.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Job title is required.");
             resp.sendRedirect(req.getContextPath() + "/employer?page=postjob");
             return;
         }
@@ -219,23 +200,23 @@ public class EmployerServlet extends HttpServlet {
             job.setJobType(paramOr(req, "jobType", "Full-time"));
             job.setDeadline(parseDate(req.getParameter("deadline"), 30));
             if (jobDao.createJob(job)) {
-                session.setAttribute("employerFlashSuccess",
+                SessionUtils.setFlashSuccess(req, "employerFlashSuccess",
                         "Job posted successfully! It will be visible after admin approval.");
             } else {
-                session.setAttribute("employerFlashError", "Could not post the job. Try again.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not post the job. Try again.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("employerFlashError", "Error posting job.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Error posting job.");
         }
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleUpdateJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+    private void handleUpdateJob(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws IOException {
         String jobIdStr = req.getParameter("jobId");
         if (jobIdStr == null || jobIdStr.isBlank()) {
-            session.setAttribute("employerFlashError", "Invalid job.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Invalid job.");
             resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
             return;
         }
@@ -258,67 +239,67 @@ public class EmployerServlet extends HttpServlet {
                 }
             }
             if (jobDao.updateJob(job)) {
-                session.setAttribute("employerFlashSuccess", "Job updated successfully!");
+                SessionUtils.setFlashSuccess(req, "employerFlashSuccess", "Job updated successfully!");
             } else {
-                session.setAttribute("employerFlashError", "Could not update the job.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not update the job.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("employerFlashError", "Error updating job.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Error updating job.");
         }
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleDeleteJob(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+    private void handleDeleteJob(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws IOException {
         String jobIdStr = req.getParameter("jobId");
         if (jobIdStr == null || jobIdStr.isBlank()) {
-            session.setAttribute("employerFlashError", "Invalid job.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Invalid job.");
             resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
             return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             JobDao jobDao = new JobDao(conn);
             if (jobDao.deleteJobByEmployer(Integer.parseInt(jobIdStr.trim()), userId)) {
-                session.setAttribute("employerFlashSuccess", "Job deleted successfully.");
+                SessionUtils.setFlashSuccess(req, "employerFlashSuccess", "Job deleted successfully.");
             } else {
-                session.setAttribute("employerFlashError", "Could not delete job.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not delete job.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("employerFlashError", "Error deleting job.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Error deleting job.");
         }
         resp.sendRedirect(req.getContextPath() + "/employer?page=myjobs");
     }
 
-    private void handleUpdateApplication(HttpServletRequest req, HttpServletResponse resp, HttpSession session,
+    private void handleUpdateApplication(HttpServletRequest req, HttpServletResponse resp,
             int userId) throws IOException {
         String appIdStr = req.getParameter("appId");
         String status = req.getParameter("status");
         if (appIdStr == null || appIdStr.isBlank() || status == null || status.isBlank()) {
-            session.setAttribute("employerFlashError", "Invalid request.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Invalid request.");
             resp.sendRedirect(req.getContextPath() + "/employer?page=applicants");
             return;
         }
         try (Connection conn = DBConnection.getConnection()) {
             ApplicationDao appDao = new ApplicationDao(conn);
             if (appDao.updateApplicationStatus(Integer.parseInt(appIdStr.trim()), status.trim(), userId)) {
-                session.setAttribute("employerFlashSuccess", "Application status updated.");
+                SessionUtils.setFlashSuccess(req, "employerFlashSuccess", "Application status updated.");
             } else {
-                session.setAttribute("employerFlashError", "Could not update application.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not update application.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("employerFlashError", "Error updating application.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Error updating application.");
         }
         resp.sendRedirect(req.getContextPath() + "/employer?page=applicants");
     }
 
-    private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp, HttpSession session, int userId)
+    private void handleProfileUpdate(HttpServletRequest req, HttpServletResponse resp, int userId)
             throws IOException {
         String fullName = req.getParameter("fullName");
         if (fullName == null || fullName.isBlank()) {
-            session.setAttribute("employerFlashError", "Full name is required.");
+            SessionUtils.setFlashError(req, "employerFlashError", "Full name is required.");
             resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
             return;
         }
@@ -340,18 +321,18 @@ public class EmployerServlet extends HttpServlet {
             EmployerDao employerDao = new EmployerDao(conn);
 
             if (!userDao.updateUserProfile(user)) {
-                session.setAttribute("employerFlashError", "Could not update account profile.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not update account profile.");
                 resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
                 return;
             }
             if (!employerDao.insertEmployerProfileIfMissing(userId)) {
-                session.setAttribute("employerFlashError", "Could not prepare employer profile.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not prepare employer profile.");
                 resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
                 return;
             }
             EmployerProfile profile = employerDao.getEmployerProfile(userId);
             if (profile == null) {
-                session.setAttribute("employerFlashError", "Employer profile not found.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Employer profile not found.");
                 resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
                 return;
             }
@@ -366,14 +347,14 @@ public class EmployerServlet extends HttpServlet {
             if (employerDao.updateEmployerProfile(profile)) {
                 User refreshed = userDao.getUserById(userId);
                 if (refreshed != null)
-                    session.setAttribute("user", refreshed);
-                session.setAttribute("employerFlashSuccess", "Profile saved.");
+                    SessionUtils.updateSessionUser(req, refreshed);
+                SessionUtils.setFlashSuccess(req, "employerFlashSuccess", "Profile saved.");
             } else {
-                session.setAttribute("employerFlashError", "Could not update employer details.");
+                SessionUtils.setFlashError(req, "employerFlashError", "Could not update employer details.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("employerFlashError", "An error occurred while saving.");
+            SessionUtils.setFlashError(req, "employerFlashError", "An error occurred while saving.");
         }
         resp.sendRedirect(req.getContextPath() + "/employer?page=profile");
     }

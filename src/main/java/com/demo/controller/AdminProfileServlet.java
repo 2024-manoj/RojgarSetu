@@ -4,12 +4,12 @@ import com.demo.filter.AdminAuth;
 import com.demo.dao.UserDao;
 import com.demo.models.User;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -38,24 +38,10 @@ public class AdminProfileServlet extends HttpServlet {
         if (!AdminAuth.requireAdmin(req, resp)) {
             return;
         }
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
-        if (session != null) {
-            Object ok = session.getAttribute("flashSuccess");
-            if (ok != null) {
-                req.setAttribute("success", ok);
-                session.removeAttribute("flashSuccess");
-            }
-            Object err = session.getAttribute("flashError");
-            if (err != null) {
-                req.setAttribute("error", err);
-                session.removeAttribute("flashError");
-            }
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
+
+        SessionUtils.consumeFlash(req, "flashSuccess", "flashError");
         try (Connection conn = DBConnection.getConnection()) {
             UserDao dao = new UserDao(conn);
             User user = dao.getUserById(userId);
@@ -82,12 +68,9 @@ public class AdminProfileServlet extends HttpServlet {
         if (!AdminAuth.requireAdmin(req, resp)) {
             return;
         }
-        HttpSession session = req.getSession(false);
-        Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (userId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer userId = SessionUtils.requireUserId(req, resp);
+        if (userId == null) return;
+
         String fullName = req.getParameter("fullName");
         String phone = req.getParameter("phone");
         String location = req.getParameter("location");
@@ -108,16 +91,15 @@ public class AdminProfileServlet extends HttpServlet {
             if (dao.updateUserProfile(user)) {
                 User refreshed = dao.getUserById(userId);
                 if (refreshed != null) {
-                    session.setAttribute("user", refreshed);
-                    session.setAttribute("adminName", refreshed.getFullName());
+                    SessionUtils.updateSessionUser(req, refreshed);
                 }
-                session.setAttribute("flashSuccess", "Profile updated.");
+                SessionUtils.setFlashSuccess(req, "flashSuccess", "Profile updated.");
             } else {
-                session.setAttribute("flashError", "Could not update profile.");
+                SessionUtils.setFlashError(req, "flashError", "Could not update profile.");
             }
         } catch (Exception e) {
             e.printStackTrace();
-            session.setAttribute("flashError", "An error occurred.");
+            SessionUtils.setFlashError(req, "flashError", "An error occurred.");
         }
         resp.sendRedirect(req.getContextPath() + "/admin/profile");
     }

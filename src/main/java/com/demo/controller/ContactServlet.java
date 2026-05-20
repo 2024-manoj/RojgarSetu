@@ -1,5 +1,6 @@
 package com.demo.controller;
 
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -44,7 +45,7 @@ public class ContactServlet extends HttpServlet {
         String email = req.getParameter("email");
         String message = req.getParameter("message");
 
-        req.getSession().setAttribute("success", "Thank you for your message! We'll get back to you soon.");
+        SessionUtils.setFlashSuccess(req, "success", "Thank you for your message! We'll get back to you soon.");
         resp.sendRedirect(req.getContextPath() + "/contact");
     }
 }

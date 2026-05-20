@@ -3,12 +3,12 @@ package com.demo.controller;
 import com.demo.filter.AdminAuth;
 import com.demo.dao.UserDao;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -65,8 +65,7 @@ public class AdminSeekersServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/seekers");
             return;
         }
-        HttpSession session = req.getSession(false);
-        Integer adminId = session != null ? (Integer) session.getAttribute("userId") : null;
+        Integer adminId = SessionUtils.getCurrentUserId(req);
         if ("delete".equalsIgnoreCase(action) && adminId != null && adminId == userId) {
             resp.sendRedirect(req.getContextPath() + "/admin/seekers");
             return;

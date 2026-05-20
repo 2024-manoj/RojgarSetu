@@ -3,12 +3,12 @@ package com.demo.controller;
 import com.demo.filter.AdminAuth;
 import com.demo.dao.JobDao;
 import com.demo.utils.DBConnection;
+import com.demo.utils.SessionUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -71,12 +71,8 @@ public class AdminJobsServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/jobs");
             return;
         }
-        HttpSession session = req.getSession(false);
-        Integer adminId = session != null ? (Integer) session.getAttribute("userId") : null;
-        if (adminId == null) {
-            resp.sendRedirect(req.getContextPath() + "/login");
-            return;
-        }
+        Integer adminId = SessionUtils.requireUserId(req, resp);
+        if (adminId == null) return;
         try (Connection conn = DBConnection.getConnection()) {
             JobDao dao = new JobDao(conn);
             if ("approve".equalsIgnoreCase(action)) {
